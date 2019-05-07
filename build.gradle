@@ -21,6 +21,7 @@ dependencies {
 
 generateGrammarSource {
     maxHeapSize = "64m"
+    arguments = ["-lib", "src/main/antlr/de/unitrier/dbis/schenql"]
 }
 compileJava.dependsOn generateGrammarSource
 
