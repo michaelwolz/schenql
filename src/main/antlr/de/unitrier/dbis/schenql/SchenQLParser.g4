@@ -11,23 +11,21 @@ package de.unitrier.dbis.schenql
 }
 
 query
-    : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery)
-      SPACE?
-      SEMI
-      ;
+    : (aggregateFunction
+    | publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery)
+    (LIMIT NUMBER)?
+    SEMI
+    ;
 
 // Publications
 publicationQuery
-    : PUBLICATION
-    SPACE
-    publicationLimitation*
+    : publicationAggregateFunction | PUBLICATION publicationLimitation*
     ;
 
 publicationLimitation
-    : (WRITTEN_BY SPACE person | EDITED_BY SPACE person | PUBLISHED_BY SPACE institution | ABOUT SPACE keywords+
-    | BEFORE SPACE YEAR | AFTER SPACE YEAR | IN_YEAR SPACE YEAR | APPEARED_IN SPACE journal
-    | CITED_BY SPACE publication | CITES SPACE publication | TITLE SPACE STRING)
-    SPACE?
+    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords+
+    | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN journal
+    | CITED_BY publication | CITES publication | TITLE STRING
     ;
 
 publication
@@ -37,24 +35,27 @@ publication
 // Persons
 personQuery
     : PERSON
-    SPACE
-    personLimitation
+    personLimitation*
     ;
 
 personLimitation
-    : (NAMED SPACE STRING | AUTHORED SPACE publication | EDITED SPACE publication | WORKS_FOR SPACE institution
-    | PUBLISHED_WITH SPACE institution | PUBLISHED_IN SPACE (conference | journal) | CITED_BY SPACE publication
-    | CITES SPACE publication)
-    SPACE?
+    : NAMED STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
+    | PUBLISHED_WITH institution | PUBLISHED_IN (conference | journal) | CITED_BY publication
+    | CITES publication
     ;
 
 person
-    : LR_BRACKET personQuery RR_BRACKET | STRING ; // Orcid
+    : LR_BRACKET personQuery RR_BRACKET | STRING | aggregateFunction; // Orcid
 
 // Institutions
 
 institutionQuery
     : INSTITUTION
+    institutionLimitation*
+    ;
+
+institutionLimitation
+    : NAMED STRING | IN_YEAR YEAR | CITY STRING | COUNTRY STRING | MEMBERS person
     ;
 
 institution
@@ -64,14 +65,12 @@ institution
 // Conferences
 conferenceQuery
     : CONFERENCE
-    SPACE
-    conferenceLimitation
+    conferenceLimitation*
     ;
 
 conferenceLimitation
-    : (NAMED SPACE STRING | ACRONYM SPACE STRING | ABOUT SPACE STRING | AFTER SPACE YEAR
-    | BEFORE SPACE YEAR | IN_YEAR SPACE YEAR | CITY SPACE STRING | COUNTRY SPACE STRING)
-    SPACE?
+    : NAMED STRING | ACRONYM STRING | ABOUT STRING | AFTER YEAR
+    | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
     ;
 
 conference
@@ -79,16 +78,32 @@ conference
     ;
 
 // Journals
-
 journalQuery
     : JOURNAL
+    journalLimitation*
+    ;
+
+journalLimitation
+    : NAMED STRING | ACRONYM STRING | ABOUT STRING | AFTER YEAR
+    | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
     ;
 
 journal
     : LR_BRACKET journalQuery RR_BRACKET | STRING
     ;
 
+// Aggregate Function
+aggregateFunction
+    : COUNT LR_BRACKET query RR_BRACKET
+    ;
+
+publicationAggregateFunction
+    : MOST_CITED LR_BRACKET publicationQuery RR_BRACKET
+    ;
+
+
+
 // Other
 keywords
-    : SL_BRACKET (STRING SPACE? COMMA SPACE?)* STRING SR_BRACKET | STRING
+    : SL_BRACKET (STRING COMMA)* STRING SR_BRACKET | STRING
     ;
