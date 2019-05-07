@@ -1,4 +1,4 @@
-package unitrier.dbis.schenql;
+package de.unitrier.dbis.schenql.compiler;
 
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;

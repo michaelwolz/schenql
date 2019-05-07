@@ -9,6 +9,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 11.0
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -16,4 +17,30 @@ dependencies {
     antlr "org.antlr:antlr4:4.7.2"
     compile "org.antlr:antlr4-runtime:4.7.2"
     testCompile 'junit:junit:4.12'
+}
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+}
+compileJava.dependsOn generateGrammarSource
+
+jar {
+    manifest {
+        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.SchenQL"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.SchenQL"
+    }
+
+    baseName = "schenql-full"
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
