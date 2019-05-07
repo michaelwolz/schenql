@@ -52,22 +52,15 @@ STRING:                 DOUBLE_QUOTE_SYMB ~('\r' | '\n' | '"')* DOUBLE_QUOTE_SYM
 YEAR:                   ('18' | '19' | '20' | '21') ('0'..'9')('0'..'9');
 NUMBER:                 YEAR | [1-9][0-9]*; // Quick Fix
 
-// Constructors symbols - from MySQLLexer.g4 (https://github.com/antlr/grammars-v4/blob/master/mysql/MySqlLexer.g4)
-DOT:                    '.';
+// Constructors symbols
 LR_BRACKET:             '(';
 RR_BRACKET:             ')';
-COMMA:                  ',';
-SEMI:                   ';';
-AT_SIGN:                '@';
-ZERO_DECIMAL:           '0';
-ONE_DECIMAL:            '1';
-TWO_DECIMAL:            '2';
-SINGLE_QUOTE_SYMB:      '\'';
-DOUBLE_QUOTE_SYMB:      '"';
-REVERSE_QUOTE_SYMB:     '`';
-COLON_SYMB:             ':';
-
 SL_BRACKET:             '[';
 SR_BRACKET:             ']';
+COMMA:                  ',';
+SEMI:                   ';';
+SINGLE_QUOTE_SYMB:      '\'';
+DOUBLE_QUOTE_SYMB:      '"';
 
+// Ignore Spaces
 SPACE:                  [ \t\r\n]+ -> skip;
