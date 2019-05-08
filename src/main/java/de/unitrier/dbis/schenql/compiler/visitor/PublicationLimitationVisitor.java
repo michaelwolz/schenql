@@ -11,14 +11,14 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // Written By
         if (ctx.WRITTEN_BY() != null) {
-            ql.setJoins(new String[]{"`person_authored_publication`", "`person`", "`person_names`"});
+            ql.setJoins(new String[]{"`person_authored_publication`", "`person_names`"});
             ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
             return ql;
         }
 
         // Edited By
         if (ctx.EDITED_BY() != null) {
-            ql.setJoins(new String[]{"`person_edited_publication`", "`person`", "`person_names`"});
+            ql.setJoins(new String[]{"`person_edited_publication`", "`person_names`"});
             ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
             return ql;
         }
@@ -29,18 +29,32 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // About
         if (ctx.ABOUT() != null) {
+            ql.setJoins(new String[]{"`publication_has_keyword`"});
+
+            KeywordVisitor kv = new KeywordVisitor();
+            String keywords = kv.visitKeywords(ctx.keywords());
+
+            // Comparison-Type is implemented in KeywordVisitor for this case
+            ql.setLimitation("`publication_has_keyword`.`keyword`" + keywords);
+            return ql;
         }
 
         // Before
         if (ctx.BEFORE() != null) {
+            ql.setLimitation("`publication`.`year` <= " + ctx.YEAR().getText());
+            return ql;
         }
 
         // After
         if (ctx.AFTER() != null) {
+            ql.setLimitation("`publication`.`year` >= " + ctx.YEAR().getText());
+            return ql;
         }
 
         // In Year
         if (ctx.IN_YEAR() != null) {
+            ql.setLimitation("`publication`.`year` = " + ctx.YEAR().getText());
+            return ql;
         }
 
         // Appeared In
@@ -65,6 +79,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // Title
         if (ctx.TITLE() != null) {
+            ql.setLimitation("`publication`.`title` LIKE \"%" + ctx.TITLE().getText() + "%\"");
         }
 
         return null;

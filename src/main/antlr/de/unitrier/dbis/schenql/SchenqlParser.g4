@@ -10,11 +10,14 @@ options { tokenVocab=SchenqlLexer; }
 package de.unitrier.dbis.schenql;
 }
 
-query
-    : (aggregateFunction
-    | publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery)
-    (LIMIT NUMBER)?
+root
+    : (aggregateFunction | query | attributeOf)
     SEMI
+    ;
+
+query
+    : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery)
+    (LIMIT NUMBER)?
     ;
 
 // Publications
@@ -23,7 +26,7 @@ publicationQuery
     ;
 
 publicationLimitation
-    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords+
+    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN journal
     | CITED_BY publication | CITES publication | TITLE STRING
     ;
@@ -101,9 +104,14 @@ publicationAggregateFunction
     : MOST_CITED LR_BRACKET publicationQuery RR_BRACKET
     ;
 
+// Attributes
+attributeOf
+    : ATTRIBUTE_OF query
+    ;
 
 
 // Other
 keywords
-    : SL_BRACKET (STRING COMMA)* STRING SR_BRACKET | STRING
+    : SL_BRACKET (STRING COMMA)* STRING SR_BRACKET
+    | STRING
     ;

@@ -15,7 +15,7 @@ public class DBConnection {
             conn = DriverManager.getConnection(connectionURL);
 
             statement = conn.createStatement();
-            rs = statement.executeQuery("SELECT * FROM `schenql-db.publications` LIMIT 10");
+            rs = statement.executeQuery(query);
             while (rs.next()) {
                 System.out.println(rs.getString("title"));
             }

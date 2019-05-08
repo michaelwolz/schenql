@@ -14,7 +14,7 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
         if (ctx.PUBLICATION() != null) {
             PublicationLimitationVisitor plv = new PublicationLimitationVisitor();
 
-            // Checking limitations
+            // Getting limitations from child nodes
             List<QueryLimitation> queryLimitations = ctx.publicationLimitation()
                     .stream()
                     .map(ql -> ql.accept(plv))
@@ -30,7 +30,8 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
             ArrayList<String> limitations = new ArrayList<>();
             queryLimitations.forEach(
                     ql -> {
-                        joins.addAll(Arrays.asList(ql.getJoins()));
+                        if (ql.getJoins() != null)
+                            joins.addAll(Arrays.asList(ql.getJoins()));
                         limitations.add(ql.getLimitation());
                     }
             );

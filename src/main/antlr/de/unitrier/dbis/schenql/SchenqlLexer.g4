@@ -50,7 +50,11 @@ MOST_CITED:             'MOST CITED';
 STRING:                 DOUBLE_QUOTE_SYMB ~('\r' | '\n' | '"')* DOUBLE_QUOTE_SYMB
                         | SINGLE_QUOTE_SYMB ~('\r' | '\n' | '\'')* SINGLE_QUOTE_SYMB;
 YEAR:                   ('18' | '19' | '20' | '21') ('0'..'9')('0'..'9');
-NUMBER:                 YEAR | [1-9][0-9]*; // Quick Fix
+NUMBER:                 [1-9][0-9]* | YEAR; //Quick-Fix
+
+
+// Additional
+ATTRIBUTE_OF:           STRING ' OF';
 
 // Constructors symbols
 LR_BRACKET:             '(';

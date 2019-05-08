@@ -2,7 +2,8 @@ package de.unitrier.dbis.schenql.compiler;
 
 import de.unitrier.dbis.schenql.SchenqlLexer;
 import de.unitrier.dbis.schenql.SchenqlParser;
-import de.unitrier.dbis.schenql.compiler.visitor.SchenqlVisitor;
+import de.unitrier.dbis.schenql.compiler.visitor.RootVisitor;
+import de.unitrier.dbis.schenql.connection.DBConnection;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -14,29 +15,30 @@ public class Schenql {
     public static void main(String[] args) {
         printWelcomeMessage();
 
-//        DBConnection dbConnection = new DBConnection();
-//        dbConnection.executeQuery("jaja");
+        DBConnection dbConnection = new DBConnection();
 
         String query;
         String generatedSQL;
         while (true) {
             Scanner scan = new Scanner(System.in);
-            System.out.print("schenql> ");
+            System.out.print("\nschenql> ");
             query = scan.nextLine();
 
             if (!query.equals("exit;")) {
-                System.out.println("Processing Query");
                 CharStream charStream = CharStreams.fromString(query);
 
                 SchenqlLexer lexer = new SchenqlLexer(charStream);
                 CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
                 SchenqlParser parser = new SchenqlParser(commonTokenStream);
 
-                SchenqlParser.QueryContext queryContext = parser.query();
+                SchenqlParser.RootContext rootContext = parser.root();
 
-                SchenqlVisitor visitor = new SchenqlVisitor();
-                generatedSQL = visitor.visit(queryContext);
-                System.out.println(generatedSQL);
+                RootVisitor visitor = new RootVisitor();
+                generatedSQL = visitor.visit(rootContext);
+                System.out.println("Query: " + generatedSQL);
+
+                // Execute the query
+                dbConnection.executeQuery(generatedSQL);
             } else {
                 System.out.println("Bye Bye :)");
                 break;

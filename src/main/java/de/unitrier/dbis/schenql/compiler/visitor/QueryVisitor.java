@@ -3,7 +3,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 
-public class SchenqlVisitor extends SchenqlParserBaseVisitor<String> {
+public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
     public String visitQuery(SchenqlParser.QueryContext ctx) {
         String query = "";
