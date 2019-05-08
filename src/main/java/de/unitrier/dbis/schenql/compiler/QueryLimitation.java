@@ -1,7 +1,7 @@
 package de.unitrier.dbis.schenql.compiler;
 
 public class QueryLimitation {
-    private String[] joins;
+    private Join[] joins;
 
     public String getLimitation() {
         return limitation;
@@ -13,11 +13,11 @@ public class QueryLimitation {
 
     private String limitation;
 
-    public String[] getJoins() {
+    public Join[] getJoins() {
         return joins;
     }
 
-    public void setJoins(String[] joins) {
+    public void setJoins(Join[] joins) {
         this.joins = joins;
     }
 }

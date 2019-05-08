@@ -2,6 +2,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.Join;
 import de.unitrier.dbis.schenql.compiler.QueryLimitation;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
             q.append("SELECT * FROM `publication`");
 
             // Processing joins and limitations
-            Set<String> joins = new HashSet<>();
+            ArrayList<Join> joins = new ArrayList<Join>();
             ArrayList<String> limitations = new ArrayList<>();
             queryLimitations.forEach(
                     ql -> {
@@ -40,7 +41,11 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
             joins.forEach(
                     join -> {
                         q.append(" INNER JOIN ");
-                        q.append(join);
+                        q.append(join.getTableName());
+                        q.append(" ON ");
+                        q.append(join.getTableName()).append(".").append(join.getKey());
+                        q.append(" = ");
+                        q.append(join.getJoinKey());
                     }
             );
 

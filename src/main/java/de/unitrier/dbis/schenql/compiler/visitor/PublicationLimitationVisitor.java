@@ -2,6 +2,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.Join;
 import de.unitrier.dbis.schenql.compiler.QueryLimitation;
 
 public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimitation> {
@@ -11,14 +12,36 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // Written By
         if (ctx.WRITTEN_BY() != null) {
-            ql.setJoins(new String[]{"`person_authored_publication`", "`person_names`"});
+            ql.setJoins(new Join[]{
+                    new Join(
+                            "`person_authored_publication`",
+                            "`publicationKey`",
+                            "`publication`.`dblpKey`"
+                    ),
+                    new Join(
+                            "`person_names`",
+                            "`personKey`",
+                            "`person_authored_publication`.`personKey`"
+                    )
+            });
             ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
             return ql;
         }
 
         // Edited By
         if (ctx.EDITED_BY() != null) {
-            ql.setJoins(new String[]{"`person_edited_publication`", "`person_names`"});
+            ql.setJoins(new Join[]{
+                    new Join(
+                            "`person_edited_publication`",
+                            "`publicationKey`",
+                            "`publication`.`dblpKey`"
+                    ),
+                    new Join(
+                            "`person_names`",
+                            "`personKey`",
+                            "`person_edited_publication`.`personKey`"
+                    )
+            });
             ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
             return ql;
         }
@@ -29,14 +52,14 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // About
         if (ctx.ABOUT() != null) {
-            ql.setJoins(new String[]{"`publication_has_keyword`"});
-
-            KeywordVisitor kv = new KeywordVisitor();
-            String keywords = kv.visitKeywords(ctx.keywords());
-
-            // Comparison-Type is implemented in KeywordVisitor for this case
-            ql.setLimitation("`publication_has_keyword`.`keyword`" + keywords);
-            return ql;
+//            ql.setJoins(new String[]{"`publication_has_keyword`"});
+//
+//            KeywordVisitor kv = new KeywordVisitor();
+//            String keywords = kv.visitKeywords(ctx.keywords());
+//
+//            // Comparison-Type is implemented in KeywordVisitor for this case
+//            ql.setLimitation("`publication_has_keyword`.`keyword`" + keywords);
+//            return ql;
         }
 
         // Before
@@ -61,21 +84,21 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         if (ctx.APPEARED_IN() != null) {
         }
 
-        // Cited By
-        if (ctx.CITED_BY() != null) {
-            PublicationVisitor pv = new PublicationVisitor();
-            ql.setJoins(new String[]{"publication_references", "publication"});
-            ql.setLimitation("`publication_references`.`pub2` = " + pv.visitPublication(ctx.publication()));
-            return ql;
-        }
-
-        // Cites
-        if (ctx.CITES() != null) {
-            PublicationVisitor pv = new PublicationVisitor();
-            ql.setJoins(new String[]{"publication_references", "publication"});
-            ql.setLimitation("`publication_references`.`pub1` = " + pv.visitPublication(ctx.publication()));
-            return ql;
-        }
+//        // Cited By
+//        if (ctx.CITED_BY() != null) {
+//            PublicationVisitor pv = new PublicationVisitor();
+//            ql.setJoins(new String[]{"publication_references", "publication"});
+//            ql.setLimitation("`publication_references`.`pub2` = " + pv.visitPublication(ctx.publication()));
+//            return ql;
+//        }
+//
+//        // Cites
+//        if (ctx.CITES() != null) {
+//            PublicationVisitor pv = new PublicationVisitor();
+//            ql.setJoins(new String[]{"publication_references", "publication"});
+//            ql.setLimitation("`publication_references`.`pub1` = " + pv.visitPublication(ctx.publication()));
+//            return ql;
+//        }
 
         // Title
         if (ctx.TITLE() != null) {
