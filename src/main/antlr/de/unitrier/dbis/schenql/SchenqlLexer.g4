@@ -1,7 +1,7 @@
-lexer grammar SchenQLLexer;
+lexer grammar SchenqlLexer;
 
 @header {
-package de.unitrier.dbis.schenql
+package de.unitrier.dbis.schenql;
 }
 
 // First-Class-Citizen

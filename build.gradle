@@ -1,6 +1,6 @@
 plugins {
-    id 'java'
     id 'antlr'
+    id 'java'
 }
 
 group 'de.uni-trier.dbis.schenql'
@@ -15,19 +15,26 @@ repositories {
 
 dependencies {
     antlr "org.antlr:antlr4:4.7.2"
-    compile "org.antlr:antlr4-runtime:4.7.2"
+    compile(
+            "org.antlr:antlr4-runtime:4.7.2",
+            "commons-cli:commons-cli:1.4",
+            "mysql:mysql-connector-java:5.1.6"
+    )
     testCompile 'junit:junit:4.12'
 }
 
 generateGrammarSource {
     maxHeapSize = "64m"
-    arguments = ["-lib", "src/main/antlr/de/unitrier/dbis/schenql"]
+    arguments = [
+            "-lib", "src/main/antlr/de/unitrier/dbis/schenql",
+            "-visitor"
+    ]
 }
 compileJava.dependsOn generateGrammarSource
 
 jar {
     manifest {
-        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.SchenQL"
+        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.Schenql"
     }
 
     from {
@@ -37,7 +44,7 @@ jar {
 
 task customFatJar(type: Jar) {
     manifest {
-        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.SchenQL"
+        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.Schenql"
     }
 
     baseName = "schenql-full"

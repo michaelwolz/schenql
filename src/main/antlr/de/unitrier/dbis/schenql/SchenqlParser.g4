@@ -2,12 +2,12 @@
  * This file contains the grammar for the SchenQL query language
  */
 
-parser grammar SchenQLParser;
+parser grammar SchenqlParser;
 
-options { tokenVocab=SchenQLLexer; }
+options { tokenVocab=SchenqlLexer; }
 
 @header {
-package de.unitrier.dbis.schenql
+package de.unitrier.dbis.schenql;
 }
 
 query
