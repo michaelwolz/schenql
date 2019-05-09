@@ -11,9 +11,9 @@ public class KeywordVisitor extends SchenqlParserBaseVisitor<String> {
         if (ctx.STRING().size() > 1) {
             ArrayList<String> keywords = new ArrayList<>();
             ctx.STRING().forEach(keyword -> keywords.add(keyword.getText()));
-            return " IN (" + String.join(",", keywords) + ")";
+            return String.join(",", keywords);
         } else {
-            return " = " + ctx.STRING(0).getText();
+            return ctx.STRING(0).getText();
         }
     }
 }

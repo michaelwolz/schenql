@@ -12,6 +12,9 @@ import java.util.Scanner;
 
 
 public class Schenql {
+    public static boolean EXACT_MATCH_STRINGS = true;
+    public static int DEFAULT_QUERY_LIMIT = 100;
+
     public static void main(String[] args) {
         printWelcomeMessage();
 
@@ -25,20 +28,24 @@ public class Schenql {
             query = scan.nextLine();
 
             if (!query.equals("exit;")) {
-                CharStream charStream = CharStreams.fromString(query);
+                try {
+                    CharStream charStream = CharStreams.fromString(query);
 
-                SchenqlLexer lexer = new SchenqlLexer(charStream);
-                CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-                SchenqlParser parser = new SchenqlParser(commonTokenStream);
+                    SchenqlLexer lexer = new SchenqlLexer(charStream);
+                    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+                    SchenqlParser parser = new SchenqlParser(commonTokenStream);
 
-                SchenqlParser.RootContext rootContext = parser.root();
+                    SchenqlParser.RootContext rootContext = parser.root();
 
-                RootVisitor visitor = new RootVisitor();
-                generatedSQL = visitor.visit(rootContext);
-                System.out.println("Query: " + generatedSQL);
+                    RootVisitor visitor = new RootVisitor();
+                    generatedSQL = visitor.visit(rootContext);
+                    System.out.println("Query: " + generatedSQL);
 
-                // Execute the query
-                dbConnection.executeQuery(generatedSQL);
+                    // Execute the query
+                    dbConnection.executeQuery(generatedSQL);
+                } catch (java.lang.NullPointerException e) {
+                    System.out.println("You have an error in your SchenQL-Syntax.PU");
+                }
             } else {
                 System.out.println("Bye Bye :)");
                 break;

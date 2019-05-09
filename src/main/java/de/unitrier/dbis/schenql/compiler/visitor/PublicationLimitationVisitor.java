@@ -5,6 +5,8 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.Join;
 import de.unitrier.dbis.schenql.compiler.QueryLimitation;
 
+import java.util.ArrayList;
+
 public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimitation> {
     @Override
     public QueryLimitation visitPublicationLimitation(SchenqlParser.PublicationLimitationContext ctx) {
@@ -19,15 +21,16 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                             "`publication`.`dblpKey`"
                     ),
                     new Join(
-                            "`person_names`",
-                            "`personKey`",
+                            "`person`",
+                            "`dblpKey`",
                             "`person_authored_publication`.`personKey`"
                     )
             });
-            ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
+            PersonVisitor pv = new PersonVisitor();
+            ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
             return ql;
         }
-
+        // TODO: What if WRITTEN BY and EDITED BY is used in the same query?
         // Edited By
         if (ctx.EDITED_BY() != null) {
             ql.setJoins(new Join[]{
@@ -37,30 +40,40 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                             "`publication`.`dblpKey`"
                     ),
                     new Join(
-                            "`person_names`",
-                            "`personKey`",
+                            "`person`",
+                            "`dblpKey`",
                             "`person_edited_publication`.`personKey`"
                     )
             });
-            ql.setLimitation("`person_names`.`name` = " + ctx.person().getText());
+            PersonVisitor pv = new PersonVisitor();
+            ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
             return ql;
         }
 
         // Published by
-        if (ctx.PUBLISHED_BY() != null) {
-        }
+//        if (ctx.PUBLISHED_BY() != null) {
+//            ql.setJoins(new Join[] {
+//                    new Join(
+//
+//                    )
+//            });
+//        }
 
         // About
         if (ctx.ABOUT() != null) {
-//            ql.setJoins(new String[]{"`publication_has_keyword`"});
-//
-//            KeywordVisitor kv = new KeywordVisitor();
-//            String keywords = kv.visitKeywords(ctx.keywords());
-//
-//            // Comparison-Type is implemented in KeywordVisitor for this case
-//            ql.setLimitation("`publication_has_keyword`.`keyword`" + keywords);
-//            return ql;
+            ql.setJoins(new Join[]{
+                    new Join("`publication_has_keyword`",
+                            "`dblpKey`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+
+            KeywordVisitor kv = new KeywordVisitor();
+            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeywords(ctx.keywords()) + ")");
+            return ql;
         }
+
+        // TODO: Full-Text-Search for abstracts with ON keyword (needs to be added to the grammar too)
 
         // Before
         if (ctx.BEFORE() != null) {
@@ -82,27 +95,59 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // Appeared In
         if (ctx.APPEARED_IN() != null) {
+            ql.setJoins(new Join[]{
+                    new Join("`journal_name`",
+                            "`journal_key`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+
+            JournalVisitor jv = new JournalVisitor();
+            ql.setLimitation("`journal_name`.`journalKey` IN (" + jv.visitJournal(ctx.journal()) + ")");
         }
 
-//        // Cited By
-//        if (ctx.CITED_BY() != null) {
-//            PublicationVisitor pv = new PublicationVisitor();
-//            ql.setJoins(new String[]{"publication_references", "publication"});
-//            ql.setLimitation("`publication_references`.`pub2` = " + pv.visitPublication(ctx.publication()));
-//            return ql;
-//        }
-//
-//        // Cites
-//        if (ctx.CITES() != null) {
-//            PublicationVisitor pv = new PublicationVisitor();
-//            ql.setJoins(new String[]{"publication_references", "publication"});
-//            ql.setLimitation("`publication_references`.`pub1` = " + pv.visitPublication(ctx.publication()));
-//            return ql;
-//        }
+        // Cited By
+        if (ctx.CITED_BY() != null) {
+            PublicationVisitor pv = new PublicationVisitor();
+            ql.setJoins(new Join[]{
+                    new Join("`publication_references`",
+                            "`pub2_id`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+            ql.setGroupBy(new ArrayList<>() {
+                {
+                    add("`publication`.`dblpKey`");
+                }
+            });
+            ql.setLimitation("`publication_references`.`pub2_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            return ql;
+        }
+
+        // Cites
+        if (ctx.CITES() != null) {
+            PublicationVisitor pv = new PublicationVisitor();
+            ql.setJoins(new Join[]{
+                    new Join("`publication_references`",
+                            "`pub_id`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+            ql.setGroupBy(new ArrayList<>() {
+                {
+                    add("`publication`.`dblpKey`");
+                }
+            });
+            ql.setLimitation("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            return ql;
+        }
 
         // Title
         if (ctx.TITLE() != null) {
-            ql.setLimitation("`publication`.`title` LIKE \"%" + ctx.TITLE().getText() + "%\"");
+            ql.setLimitation("MATCH (`publication`.`title`) " +
+                    "AGAINST(\"" + ctx.TITLE().getText() +
+                    "\" IN NATURAL LANGUAGE MODE)");
+            return ql;
         }
 
         return null;

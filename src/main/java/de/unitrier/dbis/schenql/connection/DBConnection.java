@@ -6,6 +6,7 @@ public class DBConnection {
     private Connection conn = null;
     private Statement statement = null;
     private ResultSet rs = null;
+    private ResultSetMetaData rsmd = null;
 
     public void executeQuery(String query) {
         try {
@@ -16,8 +17,16 @@ public class DBConnection {
 
             statement = conn.createStatement();
             rs = statement.executeQuery(query);
+            rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+
             while (rs.next()) {
-                System.out.println(rs.getString("title"));
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(", ");
+                    String columnVal = rs.getString(i);
+                    System.out.print(rsmd.getColumnName(i) + ": " + columnVal);
+                }
+                System.out.println();
             }
         } catch (Exception e) {
             e.printStackTrace();

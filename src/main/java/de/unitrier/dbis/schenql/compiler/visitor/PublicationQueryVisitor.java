@@ -2,16 +2,22 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Join;
+import de.unitrier.dbis.schenql.compiler.DefaultFields;
+import de.unitrier.dbis.schenql.compiler.Helper;
 import de.unitrier.dbis.schenql.compiler.QueryLimitation;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
 public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
     public String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx) {
+        return visitPublicationQuery(ctx, DefaultFields.publication);
+    }
+
+    public String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, String[] selectFields) {
         if (ctx.PUBLICATION() != null) {
             PublicationLimitationVisitor plv = new PublicationLimitationVisitor();
 
@@ -22,45 +28,14 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .filter(Objects::nonNull)
                     .collect(toList());
 
-            // First-Class-Citizen
-            StringBuilder q = new StringBuilder();
-            q.append("SELECT * FROM `publication`");
-
-            // Processing joins and limitations
-            ArrayList<Join> joins = new ArrayList<Join>();
-            ArrayList<String> limitations = new ArrayList<>();
-            queryLimitations.forEach(
-                    ql -> {
-                        if (ql.getJoins() != null)
-                            joins.addAll(Arrays.asList(ql.getJoins()));
-                        limitations.add(ql.getLimitation());
-                    }
-            );
-
-            // Adding joins
-            joins.forEach(
-                    join -> {
-                        q.append(" INNER JOIN ");
-                        q.append(join.getTableName());
-                        q.append(" ON ");
-                        q.append(join.getTableName()).append(".").append(join.getKey());
-                        q.append(" = ");
-                        q.append(join.getJoinKey());
-                    }
-            );
-
-            // Adding limitations
-            if (limitations.size() > 0) {
-                q.append(" WHERE ");
-                q.append(String.join(" AND ", limitations));
-            }
-
-            return q.toString();
+            // Build select statement
+            return "SELECT " + String.join(", ", selectFields) + " FROM `publication`" +
+                    Helper.addLimitations(queryLimitations);
         }
 
-        if (ctx.publicationAggregateFunction() != null) {
+        /*if (ctx.publicationAggregateFunction() != null) {
             return visitPublicationAggregateFunction(ctx.publicationAggregateFunction());
-        }
+        }*/
         return null;
     }
 }

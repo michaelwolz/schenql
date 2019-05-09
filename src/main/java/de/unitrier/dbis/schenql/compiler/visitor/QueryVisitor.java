@@ -13,12 +13,11 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             query += pqv.visitPublicationQuery(ctx.publicationQuery());
         }
 
-        // Limit output
-        if (ctx.LIMIT() != null) {
-            query += " LIMIT " + ctx.NUMBER();
+        if (ctx.personQuery() != null) {
+            PersonQueryVisitor pqv = new PersonQueryVisitor();
+            query += pqv.visitPersonQuery(ctx.personQuery());
         }
 
-        query += ";";
         return query;
     }
 }

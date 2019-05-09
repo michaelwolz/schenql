@@ -47,8 +47,10 @@ MOST_CITED:             'MOST CITED';
 
 
 // Data types
-STRING:                 DOUBLE_QUOTE_SYMB ~('\r' | '\n' | '"')* DOUBLE_QUOTE_SYMB
-                        | SINGLE_QUOTE_SYMB ~('\r' | '\n' | '\'')* SINGLE_QUOTE_SYMB;
+STRING:                 (DOUBLE_QUOTE_SYMB ~('\r' | '\n' | '"')* DOUBLE_QUOTE_SYMB
+                        | SINGLE_QUOTE_SYMB ~('\r' | '\n' | '\'')* SINGLE_QUOTE_SYMB)
+                        {setText(getText().substring(1, getText().length()-1));}
+                        ;
 YEAR:                   ('18' | '19' | '20' | '21') ('0'..'9')('0'..'9');
 NUMBER:                 [1-9][0-9]* | YEAR; //Quick-Fix
 
