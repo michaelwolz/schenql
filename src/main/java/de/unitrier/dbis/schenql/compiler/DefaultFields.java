@@ -19,6 +19,6 @@ public class DefaultFields {
     };
 
     public final static String[] journal = new String[]{
-            ""
+            "`journal`.`acronym`"
     };
 }

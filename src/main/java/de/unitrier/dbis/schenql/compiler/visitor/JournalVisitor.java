@@ -8,7 +8,7 @@ public class JournalVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitJournal(SchenqlParser.JournalContext ctx) {
         if (ctx.journalQuery() != null) {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
-            return "(" + jqv.visitJournalQuery(ctx.journalQuery()) + ")";
+            return jqv.visitJournalQuery(ctx.journalQuery());
         } else {
             return ctx.STRING().getText();
         }

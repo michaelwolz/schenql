@@ -44,7 +44,7 @@ public class Schenql {
                     // Execute the query
                     dbConnection.executeQuery(generatedSQL);
                 } catch (java.lang.NullPointerException e) {
-                    System.out.println("You have an error in your SchenQL-Syntax.PU");
+                    System.out.println("You have an error in your SchenQL-Syntax.");
                 }
             } else {
                 System.out.println("Bye Bye :)");
