@@ -5,10 +5,10 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 
 public class InstitutionVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
-    public String visitJournal(SchenqlParser.JournalContext ctx) {
-        if (ctx.journalQuery() != null) {
-            JournalQueryVisitor jqv = new JournalQueryVisitor();
-            return "(" + jqv.visitJournalQuery(ctx.journalQuery()) + ")";
+    public String visitInstitution(SchenqlParser.InstitutionContext ctx) {
+        if (ctx.institutionQuery() != null) {
+            InstitutionQueryVisitor jqv = new InstitutionQueryVisitor();
+            return jqv.visitInstitutionQuery(ctx.institutionQuery());
         } else {
             return ctx.STRING().getText();
         }
