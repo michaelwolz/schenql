@@ -2,6 +2,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.Helper;
 
 public class InstitutionVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
@@ -10,7 +11,11 @@ public class InstitutionVisitor extends SchenqlParserBaseVisitor<String> {
             InstitutionQueryVisitor jqv = new InstitutionQueryVisitor();
             return jqv.visitInstitutionQuery(ctx.institutionQuery());
         } else {
-            return ctx.STRING().getText();
+            return "SELECT `institution`.`key` FROM `institution`" +
+                    "JOIN `institution_name`" +
+                    "ON `institution_name`.`.institutionKey` = `institution`.`key`" +
+                    "WHERE `institution_name`.`name` " +
+                    Helper.sqlStringComparison(ctx.STRING().getText());
         }
     }
 }

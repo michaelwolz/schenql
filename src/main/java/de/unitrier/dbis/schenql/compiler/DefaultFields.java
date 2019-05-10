@@ -7,17 +7,19 @@ public class DefaultFields {
     };
 
     public final static String[] person = new String[]{
+            "`person`.`primaryName`",
             "`person`.`orcid`",
-            "`person`.`h-index`",
-            "`person`.`primary_name`"
+            "`person`.`h-index`"
     };
 
     public final static String[] institution = new String[]{
-            ""
+            "`institution`.`primaryName`",
+            "`institution`.`location`"
     };
 
     public final static String[] conference = new String[]{
-            ""
+            "`conference`.`acronym`",
+            "`conference`.`corerank`"
     };
 
     public final static String[] journal = new String[]{

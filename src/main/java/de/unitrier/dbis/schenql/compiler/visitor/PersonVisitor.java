@@ -17,7 +17,7 @@ public class PersonVisitor extends SchenqlParserBaseVisitor<String> {
             return ctx.DBLP_KEY().getText();
         } else {
             return "SELECT `person`.`dblpKey` FROM `person` "
-                    + "INNER JOIN `person_names` " +
+                    + "JOIN `person_names` " +
                     "ON `person_names`.`personKey` = `person`.`dblpKey` " +
                     "WHERE `person_names`.`name` " +
                     Helper.sqlStringComparison(ctx.STRING().getText());

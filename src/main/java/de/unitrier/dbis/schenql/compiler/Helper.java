@@ -31,7 +31,7 @@ public class Helper {
         StringBuilder stmt = new StringBuilder();
         joins.forEach(
                 join -> {
-                    stmt.append(" INNER JOIN ");
+                    stmt.append(" JOIN ");
                     stmt.append(join.getTableName());
                     stmt.append(" ON ");
                     stmt.append(join.getTableName()).append(".").append(join.getKey());
