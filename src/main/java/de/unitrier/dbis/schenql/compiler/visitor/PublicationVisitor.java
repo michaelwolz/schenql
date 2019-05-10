@@ -8,7 +8,8 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitPublication(SchenqlParser.PublicationContext ctx) {
         if (ctx.publicationQuery() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationLimitationContext
+                    || ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`dblpKey`"});
             }
             return pqv.visitPublicationQuery(ctx.publicationQuery());

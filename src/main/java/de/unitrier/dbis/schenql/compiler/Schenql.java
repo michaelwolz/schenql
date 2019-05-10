@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 
 public class Schenql {
-    public static boolean EXACT_MATCH_STRINGS = true;
+    public static boolean EXACT_MATCH_STRINGS = false;
     public static int DEFAULT_QUERY_LIMIT = 100;
 
     public static void main(String[] args) {

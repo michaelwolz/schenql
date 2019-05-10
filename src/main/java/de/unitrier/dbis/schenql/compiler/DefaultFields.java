@@ -7,7 +7,9 @@ public class DefaultFields {
     };
 
     public final static String[] person = new String[]{
-            "`person`.`*`"
+            "`person`.`orcid`",
+            "`person`.`h-index`",
+            "`person`.`primary_name`"
     };
 
     public final static String[] institution = new String[]{
