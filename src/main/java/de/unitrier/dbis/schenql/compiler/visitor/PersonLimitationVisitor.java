@@ -77,10 +77,57 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
         }
 
         if (ctx.PUBLISHED_WITH() != null) {
+            ql.setJoins(new Join[]{
+                    new Join(
+                            "`person_works_for_institution`",
+                            "`personKey`",
+                            "`person`.`dblpKey`"
+                    ),
+                    new Join(
+                            "`institution`",
+                            "`key`",
+                            "`person_works_for_institution`.`institutionKey`"
+                    )
+            });
+
+            InstitutionVisitor iv = new InstitutionVisitor();
+            ql.setLimitation("`institution`.`key` IN " + iv.visitInstitution(ctx.institution()));
+
             return ql;
         }
 
         if (ctx.PUBLISHED_IN() != null) {
+            if (ctx.conference() != null) {
+                ql.setJoins(new Join[]{
+                        new Join(
+                                "`person_authored_publication`",
+                                "`personKey`",
+                                "`person`.`dblpKey`"
+                        ),
+                        new Join(
+                                "`publication`",
+                                "`dblpKey`",
+                                "`person_authored_publication`.`publicationKey`"
+                        )
+                });
+                ConferenceVisitor cv = new ConferenceVisitor();
+                ql.setLimitation("`publication`.`conferenceKey` IN " + cv.visitConference(ctx.conference()));
+            } else {
+                ql.setJoins(new Join[]{
+                        new Join(
+                                "`person_authored_publication`",
+                                "`personKey`",
+                                "`person`.`dblpKey`"
+                        ),
+                        new Join(
+                                "`publication`",
+                                "`dblpKey`",
+                                "`person_authored_publication`.`publicationKey`"
+                        )
+                });
+                JournalVisitor jv = new JournalVisitor();
+                ql.setLimitation("`publication`.`journalKey` IN " + jv.visitJournal(ctx.journal()));
+            }
             return ql;
         }
 
@@ -108,7 +155,26 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
         }
 
         if (ctx.CITES() != null) {
-
+            PublicationVisitor pv = new PublicationVisitor();
+            ql.setJoins(new Join[]{
+                    new Join(
+                            "`person_authored_publication`",
+                            "`personKey`",
+                            "`person`.`dblpKey`"
+                    ),
+                    new Join(
+                            "`publication_references`",
+                            "`pub2_id`",
+                            "`person_authored_publication`.`publicationKey`"
+                    )
+            });
+            ql.setGroupBy(new ArrayList<>() {
+                {
+                    add("`person`.`dblpKey`");
+                }
+            });
+            ql.setLimitation("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            return ql;
         }
 
         return null;

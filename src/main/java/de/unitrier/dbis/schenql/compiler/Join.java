@@ -1,9 +1,9 @@
 package de.unitrier.dbis.schenql.compiler;
 
 public class Join {
-    private String tableName;
-    private String key;
-    private String joinKey;
+    private final String tableName;
+    private final String key;
+    private final String joinKey;
 
     public Join(String tableName, String key, String joinKey) {
         this.tableName = tableName;

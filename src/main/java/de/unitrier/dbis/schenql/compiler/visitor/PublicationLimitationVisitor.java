@@ -145,7 +145,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         // Title
         if (ctx.TITLE() != null) {
             ql.setLimitation("MATCH (`publication`.`title`) " +
-                    "AGAINST(\"" + ctx.TITLE().getText() +
+                    "AGAINST(\"" + ctx.STRING().getText() +
                     "\" IN NATURAL LANGUAGE MODE)");
             return ql;
         }

@@ -12,7 +12,15 @@ PERSON:                 'PERSON' 'S'?;
 PUBLICATION:            'PUBLICATION' 'S'?;
 
 // Literals
-DBLP_KEY:               ('homepages/' STRING | 'conf/' STRING | 'journal/' STRING);
+DBLP_KEY:               (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
+                        ( 'homepages/'
+                        | 'conf/'
+                        | 'journal/'
+                        | 'books/'
+                        )
+                        ~('\r' | '\n' | '"')*
+                        (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
+                        ;
 
 // Limitations
 ABOUT:                  'ABOUT';
@@ -22,7 +30,7 @@ APPEARED_IN:            'APPEARED IN';
 AUTHORED:               'AUTHORED';
 BEFORE:                 'BEFORE';
 CITED_BY:               'CITED BY';
-CITES:                  'CITES' | 'CITING' | 'REFERENCES';
+CITES:                  'CITES' | 'CITING' | 'REFERENCES' | 'REFERENCING';
 CITY:                   'CITY';
 COUNTRY:                'COUNTRY';
 EDITED:                 'EDITED';
@@ -35,7 +43,7 @@ NAMED:                  'NAMED';
 PUBLISHED_BY:           'PUBLISHED BY';
 PUBLISHED_IN:           'PUBLISHED IN';
 PUBLISHED_WITH:         'PUBLISHED WITH';
-TITLE:                  'TITLE';
+TITLE:                  'TITLE' | 'TITLED';
 VOLUME:                 'VOLUME';
 WORKS_FOR:              'WORKS FOR';
 WRITTEN_BY:             'WRITTEN BY';

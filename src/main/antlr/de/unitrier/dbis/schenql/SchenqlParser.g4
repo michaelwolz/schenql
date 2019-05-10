@@ -32,7 +32,7 @@ publicationLimitation
     ;
 
 publication
-    : LR_BRACKET publicationQuery RR_BRACKET | STRING
+    : LR_BRACKET publicationQuery RR_BRACKET | DBLP_KEY | STRING
     ;
 
 // Persons
@@ -48,7 +48,7 @@ personLimitation
     ;
 
 person
-    : LR_BRACKET personQuery RR_BRACKET | STRING | aggregateFunction; // Orcid
+    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | STRING; // Orcid
 
 // Institutions
 
@@ -77,7 +77,7 @@ conferenceLimitation
     ;
 
 conference
-    : LR_BRACKET conferenceQuery RR_BRACKET | STRING
+    : LR_BRACKET conferenceQuery RR_BRACKET | STRING | DBLP_KEY
     ;
 
 // Journals
@@ -92,7 +92,7 @@ journalLimitation
     ;
 
 journal
-    : LR_BRACKET journalQuery RR_BRACKET | STRING
+    : LR_BRACKET journalQuery RR_BRACKET | STRING | DBLP_KEY
     ;
 
 // Aggregate Function

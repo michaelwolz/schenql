@@ -13,8 +13,11 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`dblpKey`"});
             }
             return pqv.visitPublicationQuery(ctx.publicationQuery());
+        } else if (ctx.DBLP_KEY() != null) {
+            return ctx.DBLP_KEY().getText();
         } else {
-            return ctx.STRING().getText();
+            return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
+                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")";
         }
     }
 }
