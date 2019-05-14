@@ -58,7 +58,7 @@ institutionQuery
     ;
 
 institutionLimitation
-    : NAMED STRING | IN_YEAR YEAR | CITY STRING | COUNTRY STRING | MEMBERS person
+    : NAMED STRING | CITY STRING | COUNTRY STRING | MEMBERS person
     ;
 
 institution

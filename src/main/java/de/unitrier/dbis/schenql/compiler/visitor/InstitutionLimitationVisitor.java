@@ -24,20 +24,32 @@ public class InstitutionLimitationVisitor extends SchenqlParserBaseVisitor<Query
             return ql;
         }
 
-        if (ctx.IN_YEAR() != null) {
-            return ql;
-        }
-
         if (ctx.CITY() != null) {
+            ql.setLimitation("`institution`.`city` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
         }
 
         if (ctx.COUNTRY() != null) {
+            ql.setLimitation("`institution`.`country` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
         }
 
         if (ctx.MEMBERS() != null) {
-            return ql;
+            ql.setJoins(new Join[]{
+                    new Join(
+                            "`person_works_for_institution`",
+                            "`institutionKey`",
+                            "`institution`.`key`"
+                    ),
+                    new Join(
+                            "`person`",
+                            "`dblpKey`",
+                            "`person_works_for_institution`.`personKey`"
+                    )
+            });
+
+            PersonVisitor pv = new PersonVisitor();
+            ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
         }
 
         return null;
