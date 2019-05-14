@@ -28,6 +28,21 @@ public class PersonQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .filter(Objects::nonNull)
                     .collect(toList());
 
+            // Add specialization
+            QueryLimitation ql = new QueryLimitation();
+            switch (ctx.PERSON().getText().substring(0, 4)) {
+                case "AUTH":
+                    ql.setLimitation("`person`.`dblpKey` IN " +
+                            "(SELECT `person_authored_publication`.`personKey` FROM `person_authored_publication`)");
+                    queryLimitations.add(ql);
+                    break;
+                case "EDIT":
+                    ql.setLimitation("`person`.`dblpKey` IN " +
+                            "(SELECT `person_edited_publication`.`personKey` FROM `person_edited_publication`)");
+                    queryLimitations.add(ql);
+                    break;
+            }
+
             // Build select statement
             return "SELECT " + String.join(", ", selectFields) + " FROM `person`" +
                     Helper.addLimitations(queryLimitations);

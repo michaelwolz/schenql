@@ -26,6 +26,18 @@ public class RootVisitor extends SchenqlParserBaseVisitor<String> {
             query += av.visitAggregateFunction(ctx.aggregateFunction());
         }
 
+        if (ctx.attributeOf() != null) {
+            AttributeOfVisitor aov = new AttributeOfVisitor();
+            query += aov.visitAttributeOf(ctx.attributeOf());
+
+            // Limit output
+            if (ctx.attributeOf().query().LIMIT() != null) {
+                query += " LIMIT " + ctx.attributeOf().query().NUMBER();
+            } else {
+                query += " LIMIT " + Schenql.DEFAULT_QUERY_LIMIT;
+            }
+        }
+
         query += ";";
         return query;
     }

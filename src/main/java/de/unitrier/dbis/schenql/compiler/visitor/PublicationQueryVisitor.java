@@ -17,7 +17,7 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
         return visitPublicationQuery(ctx, DefaultFields.publication);
     }
 
-    public String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, String[] selectFields) {
+    String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, String[] selectFields) {
         if (ctx.PUBLICATION() != null) {
             PublicationLimitationVisitor plv = new PublicationLimitationVisitor();
 
@@ -27,6 +27,31 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .map(ql -> ql.accept(plv))
                     .filter(Objects::nonNull)
                     .collect(toList());
+
+            // Add specialization
+            QueryLimitation ql = new QueryLimitation();
+            switch (ctx.PUBLICATION().getText().substring(0, 4)) {
+                case "BOOK":
+                    ql.setLimitation("`publication`.`type` = \"book\"");
+                    queryLimitations.add(ql);
+                    break;
+                case "ARTI":
+                    ql.setLimitation("`publication`.`type` = \"article\"");
+                    queryLimitations.add(ql);
+                    break;
+                case "PHDT":
+                    ql.setLimitation("`publication`.`type` = \"phdthesis\"");
+                    queryLimitations.add(ql);
+                    break;
+                case "MAST":
+                    ql.setLimitation("`publication`.`type` = \"masterthesis\"");
+                    queryLimitations.add(ql);
+                    break;
+                case "INPR":
+                    ql.setLimitation("`publication`.`type` = \"inproceedings\"");
+                    queryLimitations.add(ql);
+                    break;
+            }
 
             // Build select statement
             return "SELECT " + String.join(", ", selectFields) + " FROM `publication`" +

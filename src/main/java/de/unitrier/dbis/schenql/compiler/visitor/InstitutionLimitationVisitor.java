@@ -50,6 +50,7 @@ public class InstitutionLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
             PersonVisitor pv = new PersonVisitor();
             ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
+            return ql;
         }
 
         return null;

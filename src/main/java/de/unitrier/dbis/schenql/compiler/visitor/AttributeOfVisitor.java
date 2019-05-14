@@ -5,12 +5,8 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 
 public class AttributeOfVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
-    public String visitJournal(SchenqlParser.JournalContext ctx) {
-        if (ctx.journalQuery() != null) {
-            JournalQueryVisitor jqv = new JournalQueryVisitor();
-            return "(" + jqv.visitJournalQuery(ctx.journalQuery()) + ")";
-        } else {
-            return ctx.STRING().getText();
-        }
+    public String visitAttributeOf(SchenqlParser.AttributeOfContext ctx) {
+        QueryVisitor qv = new QueryVisitor();
+        return qv.visitQuery(ctx.query(), new String[]{ctx.STRING().getText()});
     }
 }

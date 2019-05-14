@@ -6,18 +6,17 @@ public class DBConnection {
     private Connection conn = null;
     private Statement statement = null;
     private ResultSet rs = null;
-    private ResultSetMetaData rsmd = null;
 
     public void executeQuery(String query) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-            String connectionURL = "jdbc:mysql://localhost/schenql-db?user=root&password=root";
+            String connectionURL = "jdbc:mysql://localhost/schenql-db?user=root&password=root&serverTimezone=UTC";
             conn = DriverManager.getConnection(connectionURL);
 
             statement = conn.createStatement();
             rs = statement.executeQuery(query);
-            rsmd = rs.getMetaData();
+            ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
             while (rs.next()) {

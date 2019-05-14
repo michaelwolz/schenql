@@ -2,7 +2,6 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
 
 public class JournalVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
@@ -11,11 +10,12 @@ public class JournalVisitor extends SchenqlParserBaseVisitor<String> {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
             return jqv.visitJournalQuery(ctx.journalQuery());
         } else {
-            return "SELECT `journal`.`dblpKey` FROM `journal` "
-                    + "JOIN `journal_name` " +
-                    "ON `journal_name`.`journalKey` = `journal`.`dblpKey` " +
-                    "WHERE `journal_name`.`name` " +
-                    Helper.sqlStringComparison(ctx.STRING().getText());
+            return defaultQuery(ctx.STRING().getText());
         }
+    }
+
+    static String defaultQuery(String acronym) {
+        return "SELECT `journal`.`dblpKey` FROM `journal` " +
+                "WHERE `journal`.`acronym` = " + acronym;
     }
 }

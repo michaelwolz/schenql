@@ -14,9 +14,9 @@ public class PublicationAggregateFunctionVisitor extends SchenqlParserBaseVisito
                             "`publication`.`title`",
                             "`publication`.`year`",
                     }) +
-                    ") as `sub`" +
-                    "JOIN `publication_references`" +
-                    "ON `publication_references`.`pub2_id` = `sub`.`dblpKey`" +
+                    ") as `sub` " +
+                    "JOIN `publication_references` " +
+                    "ON `publication_references`.`pub2_id` = `sub`.`dblpKey` " +
                     "GROUP BY `sub`.`dblpKey` ORDER BY `citations` DESC";
         }
         return null;

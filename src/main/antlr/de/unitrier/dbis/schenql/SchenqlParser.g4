@@ -43,12 +43,12 @@ personQuery
 
 personLimitation
     : NAMED STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
-    | PUBLISHED_WITH institution | PUBLISHED_IN (conference | journal) | CITED_BY publication
-    | CITES publication
+    | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
+    | CITES publication | ORCID ORCID_VALUE
     ;
 
 person
-    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | STRING; // Orcid
+    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | ORCID_VALUE | STRING; // Orcid
 
 // Institutions
 
@@ -106,7 +106,7 @@ publicationAggregateFunction
 
 // Attributes
 attributeOf
-    : ATTRIBUTE_OF query
+    : STRING OF query
     ;
 
 

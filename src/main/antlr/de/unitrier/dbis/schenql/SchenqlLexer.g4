@@ -8,14 +8,21 @@ package de.unitrier.dbis.schenql;
 CONFERENCE:             'CONFERENCE' 'S'?;
 INSTITUTION:            'INSTITUTION' 'S'?;
 JOURNAL:                'JOURNAL' 'S'?;
-PERSON:                 'PERSON' 'S'? | 'AUTHOR' 'S'? | 'EDITOR' 'S'?;
-PUBLICATION:            'PUBLICATION' 'S'?;
+PERSON:                 'PERSON' 'S'?
+                        | 'AUTHOR' 'S'?
+                        | 'EDITOR' 'S'?;
+PUBLICATION:            'PUBLICATION' 'S'?
+                        | 'BOOK' 'S'?
+                        | 'ARTICLE' 'S'?
+                        | 'MASTERTHESIS' 'ES'?
+                        | 'PHDTHESIS' 'ES'?
+                        | 'INPROCEEDING' 'S'?;
 
 // Literals
 DBLP_KEY:               (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
                         ( 'homepages/'
                         | 'conf/'
-                        | 'journal/'
+                        | 'journals/'
                         | 'books/'
                         )
                         ~('\r' | '\n' | '"')*
@@ -23,6 +30,8 @@ DBLP_KEY:               (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
                         ;
 
 // Limitations
+fragment DIGIT:         '0'..'9';
+
 ABOUT:                  'ABOUT';
 ACRONYM:                'ACRONYM';
 AFTER:                  'AFTER';
@@ -40,6 +49,10 @@ LAT:                    'LAT';
 LON:                    'LON';
 MEMBERS:                'MEMBERS';
 NAMED:                  'NAMED';
+ORCID:                  'ORCID';
+ORCID_VALUE:            DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT DIGIT DIGIT '-'
+                        DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT DIGIT DIGIT
+                        ;
 PUBLISHED_BY:           'PUBLISHED BY';
 PUBLISHED_IN:           'PUBLISHED IN';
 PUBLISHED_WITH:         'PUBLISHED WITH';
@@ -64,7 +77,7 @@ NUMBER:                 [1-9][0-9]* | YEAR; //Quick-Fix
 
 
 // Additional
-ATTRIBUTE_OF:           STRING ' OF';
+OF:                     ' OF ';
 
 // Constructors symbols
 LR_BRACKET:             '(';

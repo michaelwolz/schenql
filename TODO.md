@@ -1,6 +1,8 @@
 # TODO
 
 - Security (SQL Injections)
+- Add possibility to query more than one key with ATTRIBUTE OF X
+- Add possible attributes for ATTRIBUTE OF X
 
 ## Concepts
 

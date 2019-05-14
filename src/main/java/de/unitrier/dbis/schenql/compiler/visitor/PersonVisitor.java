@@ -15,6 +15,9 @@ public class PersonVisitor extends SchenqlParserBaseVisitor<String> {
             return pqv.visitPersonQuery(ctx.personQuery());
         } else if (ctx.DBLP_KEY() != null) {
             return ctx.DBLP_KEY().getText();
+        } else if (ctx.ORCID_VALUE() != null) {
+            return "SELECT `person`.`dblpKey` FROM `person` " +
+                    "WHERE `person`.`orcid` = \"" + ctx.ORCID_VALUE().getText() + "\"";
         } else {
             return "SELECT `person`.`dblpKey` FROM `person` "
                     + "JOIN `person_names` " +

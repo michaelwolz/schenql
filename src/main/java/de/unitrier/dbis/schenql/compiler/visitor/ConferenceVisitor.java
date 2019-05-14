@@ -11,8 +11,12 @@ public class ConferenceVisitor extends SchenqlParserBaseVisitor<String> {
             ConferenceQueryVisitor jqv = new ConferenceQueryVisitor();
             return jqv.visitConferenceQuery(ctx.conferenceQuery());
         } else {
-            return "SELECT `conference`.`dblpKey` FROM `conference` "
-                    + "WHERE `conference`.`acronym` = " + ctx.STRING().getText();
+            return defaultQuery(ctx.STRING().getText());
         }
+    }
+
+    static String defaultQuery(String acronym)  {
+        return "SELECT `conference`.`dblpKey` FROM `conference` "
+                + "WHERE `conference`.`acronym` = \"" + acronym + "\"";
     }
 }
