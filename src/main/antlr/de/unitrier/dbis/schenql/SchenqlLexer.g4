@@ -8,7 +8,7 @@ package de.unitrier.dbis.schenql;
 CONFERENCE:             'CONFERENCE' 'S'?;
 INSTITUTION:            'INSTITUTION' 'S'?;
 JOURNAL:                'JOURNAL' 'S'?;
-PERSON:                 'PERSON' 'S'?;
+PERSON:                 'PERSON' 'S'? | 'AUTHOR' 'S'? | 'EDITOR' 'S'?;
 PUBLICATION:            'PUBLICATION' 'S'?;
 
 // Literals

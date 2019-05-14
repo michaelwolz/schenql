@@ -90,12 +90,12 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         // TODO: Full-Text-Search for abstracts with ON keyword (needs to be added to the grammar too)
 
         if (ctx.BEFORE() != null) {
-            ql.setLimitation("`publication`.`year` <= " + ctx.YEAR().getText());
+            ql.setLimitation("`publication`.`year` < " + ctx.YEAR().getText());
             return ql;
         }
 
         if (ctx.AFTER() != null) {
-            ql.setLimitation("`publication`.`year` >= " + ctx.YEAR().getText());
+            ql.setLimitation("`publication`.`year` > " + ctx.YEAR().getText());
             return ql;
         }
 
