@@ -141,7 +141,7 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
                         )
                 });
                 ql.setLimitation("`publication`.`journal_dblpKey` = " + ctx.DBLP_KEY().getText() +
-                        "OR `publication`.`conference_dblpKey` = " + ctx.DBLP_KEY().getText());
+                        " OR `publication`.`conference_dblpKey` = " + ctx.DBLP_KEY().getText());
             } else {
                 ql.setJoins(new Join[]{
                         new Join(

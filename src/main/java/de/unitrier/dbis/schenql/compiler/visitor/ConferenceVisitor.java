@@ -9,6 +9,9 @@ public class ConferenceVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitConference(SchenqlParser.ConferenceContext ctx) {
         if (ctx.conferenceQuery() != null) {
             ConferenceQueryVisitor jqv = new ConferenceQueryVisitor();
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
+                return jqv.visitConferenceQuery(ctx.conferenceQuery(), new String[]{"`conference`.`dblpKey`"});
+            }
             return jqv.visitConferenceQuery(ctx.conferenceQuery());
         } else {
             return defaultQuery(ctx.STRING().getText());

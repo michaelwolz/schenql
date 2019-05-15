@@ -25,7 +25,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
 
         if (ctx.ACRONYM() != null) {
             // Exact match for acronyms
-            ql.setLimitation("`conference`.`acronym` = " + ctx.STRING().getText());
+            ql.setLimitation("`conference`.`acronym` = \"" + ctx.STRING().getText() + "\"");
             return ql;
         }
 

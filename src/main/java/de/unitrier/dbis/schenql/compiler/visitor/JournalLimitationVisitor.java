@@ -25,7 +25,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
 
         if (ctx.ACRONYM() != null) {
             // Exact match for acronyms
-            ql.setLimitation("`journal`.`acronym` = " + ctx.STRING().getText());
+            ql.setLimitation("`journal`.`acronym` = \"" + ctx.STRING().getText() + "\"");
             return ql;
         }
 

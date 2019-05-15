@@ -129,7 +129,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     add("`publication`.`dblpKey`");
                 }
             });
-            ql.setLimitation("`publication_references`.`pub2_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            ql.setLimitation("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
             return ql;
         }
 
@@ -146,7 +146,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     add("`publication`.`dblpKey`");
                 }
             });
-            ql.setLimitation("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            ql.setLimitation("`publication_references`.`pub2_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
             return ql;
         }
 
