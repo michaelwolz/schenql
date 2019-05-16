@@ -30,7 +30,7 @@ public class PersonQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
             // Add specialization
             QueryLimitation ql = new QueryLimitation();
-            switch (ctx.PERSON().getText().substring(0, 4)) {
+            switch (ctx.PERSON().getText().substring(0, 4).toUpperCase()) {
                 case "AUTH":
                     ql.setLimitation("`person`.`dblpKey` IN " +
                             "(SELECT `person_authored_publication`.`personKey` FROM `person_authored_publication`)");

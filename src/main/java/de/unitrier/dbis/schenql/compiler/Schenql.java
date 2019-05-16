@@ -2,18 +2,22 @@ package de.unitrier.dbis.schenql.compiler;
 
 import de.unitrier.dbis.schenql.SchenqlLexer;
 import de.unitrier.dbis.schenql.SchenqlParser;
+import de.unitrier.dbis.schenql.compiler.listener.SyntaxErrorListener;
 import de.unitrier.dbis.schenql.compiler.visitor.RootVisitor;
 import de.unitrier.dbis.schenql.connection.DBConnection;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.tool.GrammarParserInterpreter;
 
 import java.util.Scanner;
 
 
 public class Schenql {
-    public static boolean EXACT_MATCH_STRINGS = false;
-    public static int DEFAULT_QUERY_LIMIT = 100;
+    static final boolean EXACT_MATCH_STRINGS = false;
+    public static final int DEFAULT_QUERY_LIMIT = 100;
+    static final boolean DEBUG_MODE = false;
 
     public static void main(String[] args) {
         printWelcomeMessage();
@@ -31,21 +35,35 @@ public class Schenql {
                 try {
                     CharStream charStream = CharStreams.fromString(query);
 
+                    // Initializing the lexer
                     SchenqlLexer lexer = new SchenqlLexer(charStream);
                     CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+                    // Initializing the parser
                     SchenqlParser parser = new SchenqlParser(commonTokenStream);
 
+                    // Adding error handling
+                    SyntaxErrorListener errorListener = new SyntaxErrorListener();
+                    parser.addErrorListener(errorListener);
+
+                    // Getting the rootContext
                     SchenqlParser.RootContext rootContext = parser.root();
-
                     RootVisitor visitor = new RootVisitor();
-                    generatedSQL = visitor.visit(rootContext);
-                    System.out.println("Query: " + generatedSQL);
 
-                    // Execute the query
-                    dbConnection.executeQuery(generatedSQL);
+                    // Generate SQL
+                    generatedSQL = visitor.visit(rootContext);
+
+                    if (errorListener.getSyntaxErrors().size() == 0) {
+                        if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
+
+                        // Execute the query
+                        dbConnection.executeQuery(generatedSQL);
+                    } else {
+                        System.out.println("You have an error in your SchenQL-Syntax.");
+                    }
                 } catch (java.lang.NullPointerException e) {
                     e.printStackTrace();
-                    System.out.println("You have an error in your SchenQL-Syntax.");
+                    System.out.println("Something went wrong here.");
                 }
             } else {
                 System.out.println("Bye Bye :)");

@@ -3,13 +3,13 @@ package de.unitrier.dbis.schenql.compiler;
 public class DefaultFields {
     public final static String[] publication = new String[]{
             "`publication`.`title`",
-            "`publication`.`year`",
+//            "`publication`.`year`",
     };
 
     public final static String[] person = new String[]{
             "`person`.`primaryName`",
-            "`person`.`orcid`",
-            "`person`.`h-index`"
+//            "`person`.`orcid`",
+//            "`person`.`h-index`"
     };
 
     public final static String[] institution = new String[]{
@@ -19,7 +19,7 @@ public class DefaultFields {
 
     public final static String[] conference = new String[]{
             "`conference`.`acronym`",
-            "`conference`.`corerank`"
+//            "`conference`.`corerank`"
     };
 
     public final static String[] journal = new String[]{

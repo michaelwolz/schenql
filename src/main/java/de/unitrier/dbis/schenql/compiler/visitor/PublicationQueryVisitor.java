@@ -30,7 +30,7 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
             // Add specialization
             QueryLimitation ql = new QueryLimitation();
-            switch (ctx.PUBLICATION().getText().substring(0, 4)) {
+            switch (ctx.PUBLICATION().getText().substring(0, 4).toUpperCase()) {
                 case "BOOK":
                     ql.setLimitation("`publication`.`type` = \"book\"");
                     queryLimitations.add(ql);
