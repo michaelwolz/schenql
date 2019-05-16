@@ -5,11 +5,9 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.compiler.listener.SyntaxErrorListener;
 import de.unitrier.dbis.schenql.compiler.visitor.RootVisitor;
 import de.unitrier.dbis.schenql.connection.DBConnection;
-import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.tool.GrammarParserInterpreter;
 
 import java.util.Scanner;
 
@@ -17,7 +15,7 @@ import java.util.Scanner;
 public class Schenql {
     static final boolean EXACT_MATCH_STRINGS = false;
     public static final int DEFAULT_QUERY_LIMIT = 100;
-    static final boolean DEBUG_MODE = false;
+    private static final boolean DEBUG_MODE = true;
 
     public static void main(String[] args) {
         printWelcomeMessage();

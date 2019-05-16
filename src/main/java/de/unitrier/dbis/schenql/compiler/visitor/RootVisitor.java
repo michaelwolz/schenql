@@ -14,11 +14,15 @@ public class RootVisitor extends SchenqlParserBaseVisitor<String> {
             query += qv.visitQuery(ctx.query());
 
             // Limit output
+            String limit = Integer.toString(Schenql.DEFAULT_QUERY_LIMIT);
+
             if (ctx.query().LIMIT() != null) {
-                query += " LIMIT " + ctx.query().NUMBER();
-            } else {
-                query += " LIMIT " + Schenql.DEFAULT_QUERY_LIMIT;
+                limit = ctx.query().NUMBER().getText();
+            } else if (ctx.query().publicationQuery() != null &&
+                    ctx.query().publicationQuery().publicationAggregateFunction() != null) { // I really don't like this
+                limit = "5";
             }
+            query += " LIMIT " + limit;
         }
 
         if (ctx.aggregateFunction() != null) {

@@ -36,7 +36,7 @@ ABOUT:                  A B O U T;
 ACRONYM:                A C R O N Y M;
 AFTER:                  A F T E R;
 APPEARED_IN:            A P P E A R E D ' ' I N;
-AUTHORED:               A U T H O R E
+AUTHORED:               A U T H O R E D;
 BEFORE:                 B E F O R E;
 CITED_BY:               C I T E D ' ' B Y;
 CITES:                  C I T E S | C I T I N G | R E F E R E N C E S | R E F E R E N C I N G;
