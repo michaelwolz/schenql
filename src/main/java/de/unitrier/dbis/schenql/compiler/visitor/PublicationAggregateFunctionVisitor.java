@@ -8,6 +8,17 @@ public class PublicationAggregateFunctionVisitor extends SchenqlParserBaseVisito
     public String visitPublicationAggregateFunction(SchenqlParser.PublicationAggregateFunctionContext ctx) {
         if (ctx.MOST_CITED() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
+            if (!(ctx.getParent().getParent().getRuleContext() instanceof SchenqlParser.QueryContext)) {
+                return "SELECT `sub`.`dblpKey` FROM (" +
+                        pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{
+                                "`publication`.`dblpKey`"
+                        }) +
+                        ") as `sub` " +
+                        "JOIN `publication_references` " +
+                        "ON `publication_references`.`pub2_id` = `sub`.`dblpKey` " +
+                        "GROUP BY `sub`.`dblpKey` ORDER BY COUNT(`sub`.`dblpKey`) DESC";
+            }
+
             return "SELECT `sub`.`title`, `sub`.`year`, COUNT(`sub`.`dblpKey`) as `citations` FROM (" +
                     pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{
                             "`publication`.`dblpKey`",
