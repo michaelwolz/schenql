@@ -11,6 +11,8 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
     public QueryLimitation visitConferenceLimitation(SchenqlParser.ConferenceLimitationContext ctx) {
         QueryLimitation ql = new QueryLimitation();
 
+        /*
+        TODO: We don't actually have information on conference names at the moment
         if (ctx.NAMED() != null) {
             ql.setJoins(new Join[]{
                     new Join(
@@ -21,7 +23,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
             });
             ql.setLimitation("`conference`.`name` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
-        }
+        }*/
 
         if (ctx.ACRONYM() != null) {
             // Exact match for acronyms

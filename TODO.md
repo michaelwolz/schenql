@@ -3,6 +3,7 @@
 - Security (SQL Injections)
 - Add possibility to query more than one key with ATTRIBUTE OF X
 - Add possible attributes for ATTRIBUTE OF X
+- Optimize use of IN Statement vs JOINING a Subquery
 
 ## Concepts
 

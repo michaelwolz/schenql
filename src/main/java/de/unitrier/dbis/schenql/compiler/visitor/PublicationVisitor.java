@@ -2,6 +2,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.Helper;
 
 public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
@@ -16,8 +17,10 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
         } else if (ctx.DBLP_KEY() != null) {
             return ctx.DBLP_KEY().getText();
         } else {
+//            return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
+//                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")";
             return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
-                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")";
+                    "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
         }
     }
 }

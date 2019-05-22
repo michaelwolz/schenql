@@ -2,6 +2,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.Helper;
 import de.unitrier.dbis.schenql.compiler.Join;
 import de.unitrier.dbis.schenql.compiler.QueryLimitation;
 
@@ -29,6 +30,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
             ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
             return ql;
         }
+
         // TODO: What if WRITTEN BY and EDITED BY is used in the same query?
         if (ctx.EDITED_BY() != null) {
             ql.setJoins(new Join[]{
@@ -88,7 +90,6 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         // TODO: Full-Text-Search for abstracts with ON keyword (needs to be added to the grammar too)
-
         if (ctx.BEFORE() != null) {
             ql.setLimitation("`publication`.`year` < " + ctx.YEAR().getText());
             return ql;
@@ -105,15 +106,37 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         if (ctx.APPEARED_IN() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`journal_name`",
-                            "`journal_key`",
-                            "`publication`.`dblpKey`"
-                    )
-            });
+            if (ctx.journal() != null) {
+                ql.setJoins(new Join[]{
+                        new Join("`journal_name`",
+                                "`journal_key`",
+                                "`publication`.`dblpKey`"
+                        )
+                });
 
-            JournalVisitor jv = new JournalVisitor();
-            ql.setLimitation("`journal_name`.`journalKey` IN (" + jv.visitJournal(ctx.journal()) + ")");
+                JournalVisitor jv = new JournalVisitor();
+                ql.setLimitation("`journal_name`.`journal_dblpKey` IN (" + jv.visitJournal(ctx.journal()) + ")");
+            } else if (ctx.conference() != null) {
+                ConferenceVisitor jv = new ConferenceVisitor();
+                ql.setLimitation("`publication`.`conference_dblpKey` IN (" + jv.visitConference(ctx.conference()) + ")");
+            } else if (ctx.DBLP_KEY() != null) {
+                ql.setLimitation("`publication`.`conference_dblpKey` = " + ctx.DBLP_KEY().getText() +
+                        " OR `publication`.`journal_dblpKey` = " + ctx.DBLP_KEY().getText());
+            } else if (ctx.STRING() != null) {
+                ql.setJoins(new Join[]{
+                        new Join("`journal`",
+                                "`dblpKey`",
+                                "`publication`.`dblpKey`"
+                        ),
+                        new Join("`conference`",
+                                "`dblpKey`",
+                                "`publication`.`dblpKey`")
+                });
+
+                ql.setLimitation("`journal`.`acronym` = "+ ctx.STRING().getText() +
+                        " OR `conference`.`acronym` = " + ctx.STRING().getText());
+            }
+            return ql;
         }
 
         if (ctx.CITED_BY() != null) {
@@ -151,9 +174,10 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         if (ctx.TITLE() != null) {
-            ql.setLimitation("MATCH (`publication`.`title`) " +
-                    "AGAINST(\"" + ctx.STRING().getText() +
-                    "\" IN NATURAL LANGUAGE MODE)");
+//            ql.setLimitation("MATCH (`publication`.`title`) " +
+//                    "AGAINST(\"" + ctx.STRING().getText() +
+//                    "\" IN NATURAL LANGUAGE MODE)");
+            ql.setLimitation("`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
         }
 

@@ -27,7 +27,7 @@ publicationQuery
 
 publicationLimitation
     : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords
-    | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN journal
+    | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
     | CITED_BY publication | CITES publication | TITLE STRING
     ;
 
