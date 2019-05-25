@@ -8,65 +8,80 @@ import de.unitrier.dbis.schenql.connection.DBConnection;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-
-import java.util.Scanner;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 
 public class Schenql {
     static final boolean EXACT_MATCH_STRINGS = false;
     public static final int DEFAULT_QUERY_LIMIT = 100;
-    private static final boolean DEBUG_MODE = true;
+    private static final boolean DEBUG_MODE = false;
 
     public static void main(String[] args) {
         printWelcomeMessage();
 
         DBConnection dbConnection = new DBConnection();
 
-        String query;
         String generatedSQL;
-        while (true) {
-            Scanner scan = new Scanner(System.in);
-            System.out.print("\nschenql> ");
-            query = scan.nextLine();
 
-            if (!query.equals("exit;")) {
+        try {
+            Terminal terminal = TerminalBuilder.terminal();
+            LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+            String prompt = "schenql> ";
+
+            while (true) {
+                String query;
                 try {
-                    CharStream charStream = CharStreams.fromString(query);
-
-                    // Initializing the lexer
-                    SchenqlLexer lexer = new SchenqlLexer(charStream);
-                    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-
-                    // Initializing the parser
-                    SchenqlParser parser = new SchenqlParser(commonTokenStream);
-
-                    // Adding error handling
-                    SyntaxErrorListener errorListener = new SyntaxErrorListener();
-                    parser.addErrorListener(errorListener);
-
-                    // Getting the rootContext
-                    SchenqlParser.RootContext rootContext = parser.root();
-                    RootVisitor visitor = new RootVisitor();
-
-                    // Generate SQL
-                    generatedSQL = visitor.visit(rootContext);
-
-                    if (errorListener.getSyntaxErrors().size() == 0) {
-                        if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
-
-                        // Execute the query
-                        dbConnection.executeQuery(generatedSQL);
-                    } else {
-                        System.out.println("You have an error in your SchenQL-Syntax.");
-                    }
-                } catch (java.lang.NullPointerException e) {
-                    e.printStackTrace();
-                    System.out.println("Something went wrong here.");
+                    query = reader.readLine(prompt);
+                } catch (UserInterruptException e) {
+                    System.out.println("Bye Bye :)");
+                    break;
                 }
-            } else {
-                System.out.println("Bye Bye :)");
-                break;
+
+                if (!query.equals("exit;")) {
+                    try {
+                        CharStream charStream = CharStreams.fromString(query);
+
+                        // Initializing the lexer
+                        SchenqlLexer lexer = new SchenqlLexer(charStream);
+                        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+                        // Initializing the parser
+                        SchenqlParser parser = new SchenqlParser(commonTokenStream);
+
+                        // Adding error handling
+                        SyntaxErrorListener errorListener = new SyntaxErrorListener();
+                        parser.addErrorListener(errorListener);
+
+                        // Getting the rootContext
+                        SchenqlParser.RootContext rootContext = parser.root();
+                        RootVisitor visitor = new RootVisitor();
+
+                        // Generate SQL
+                        generatedSQL = visitor.visit(rootContext);
+
+                        if (errorListener.getSyntaxErrors().size() == 0) {
+                            if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
+
+                            // Execute the query
+                            dbConnection.executeQuery(generatedSQL);
+                        } else {
+                            System.out.println("You have an error in your SchenQL-Syntax.");
+                        }
+                    } catch (java.lang.NullPointerException e) {
+                        e.printStackTrace();
+                        System.out.println("Something went wrong here.");
+                    }
+                } else {
+                    System.out.println("Bye Bye :)");
+                    break;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
