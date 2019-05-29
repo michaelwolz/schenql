@@ -28,7 +28,7 @@ publicationQuery
 publicationLimitation
     : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
-    | CITED_BY publication | CITES publication | TITLE STRING
+    | CITED_BY publication | REFERENCES publication | TITLE STRING
     ;
 
 publication
@@ -44,7 +44,7 @@ personQuery
 personLimitation
     : NAMED STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
     | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
-    | CITES publication | ORCID ORCID_VALUE
+    | REFERENCES publication | ORCID ORCID_VALUE
     ;
 
 person

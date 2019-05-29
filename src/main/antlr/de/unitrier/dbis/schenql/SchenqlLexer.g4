@@ -39,7 +39,7 @@ APPEARED_IN:            A P P E A R E D ' ' I N;
 AUTHORED:               A U T H O R E D;
 BEFORE:                 B E F O R E;
 CITED_BY:               C I T E D ' ' B Y;
-CITES:                  C I T E S | C I T I N G | R E F E R E N C E S | R E F E R E N C I N G;
+REFERENCES:             C I T E S | C I T I N G | R E F E R E N C E S | R E F E R E N C I N G;
 CITY:                   C I T Y;
 COUNTRY:                C O U N T R Y;
 EDITED:                 E D I T E D;

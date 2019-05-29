@@ -187,7 +187,7 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
             return ql;
         }
 
-        if (ctx.CITES() != null) {
+        if (ctx.REFERENCES() != null) {
             PublicationVisitor pv = new PublicationVisitor();
             ql.setJoins(new Join[]{
                     new Join(
