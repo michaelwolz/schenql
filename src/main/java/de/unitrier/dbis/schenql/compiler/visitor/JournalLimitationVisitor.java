@@ -32,7 +32,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         if (ctx.ABOUT() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`journalKey`",
+                            "`journal_dblpKey`",
                             "`journal`.`dblpKey`"),
                     new Join("`publication_has_keyword`",
                             "`dblpKey`",
@@ -48,7 +48,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         if (ctx.AFTER() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`journalKey`",
+                            "`journal_dblpKey`",
                             "`journal`.`dblpKey`"
                     )
             });
@@ -59,7 +59,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         if (ctx.BEFORE() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`journalKey`",
+                            "`journal_dblpKey`",
                             "`journal`.`dblpKey`"
                     )
             });
@@ -70,7 +70,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         if (ctx.IN_YEAR() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`journalKey`",
+                            "`journal_dblpKey`",
                             "`journal`.`dblpKey`"
                     )
             });
@@ -81,7 +81,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         if (ctx.VOLUME() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`journalKey`",
+                            "`journal_dblpKey`",
                             "`journal`.`dblpKey`"
                     )
             });
