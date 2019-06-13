@@ -29,7 +29,7 @@ public class JournalQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .collect(toList());
 
             // Build select statement
-            return "SELECT " + String.join(", ", selectFields) + " FROM `journal`" +
+            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `journal`" +
                     Helper.addLimitations(queryLimitations);
         }
         return null;

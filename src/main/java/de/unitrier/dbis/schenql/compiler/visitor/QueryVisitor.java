@@ -19,6 +19,7 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             } else {
                 query += cqv.visitConferenceQuery(ctx.conferenceQuery());
             }
+            return query;
         }
 
         if (ctx.institutionQuery() != null) {
@@ -28,6 +29,7 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             } else {
                 query += iqv.visitInstitutionQuery(ctx.institutionQuery());
             }
+            return query;
         }
 
         if (ctx.journalQuery() != null) {
@@ -37,6 +39,7 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             } else {
                 query += jqv.visitJournalQuery(ctx.journalQuery());
             }
+            return query;
         }
 
         if (ctx.personQuery() != null) {
@@ -46,6 +49,7 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             } else {
                 query += pqv.visitPersonQuery(ctx.personQuery());
             }
+            return query;
         }
 
         if (ctx.publicationQuery() != null) {
@@ -55,6 +59,7 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             } else {
                 query += pqv.visitPublicationQuery(ctx.publicationQuery());
             }
+            return query;
         }
 
         return query;

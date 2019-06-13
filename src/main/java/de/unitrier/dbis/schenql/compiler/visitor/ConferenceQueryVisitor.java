@@ -29,7 +29,7 @@ public class ConferenceQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .collect(toList());
 
             // Build select statement
-            return "SELECT " + String.join(", ", selectFields) + " FROM `conference`" +
+            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `conference`" +
                     Helper.addLimitations(queryLimitations);
         }
         return null;

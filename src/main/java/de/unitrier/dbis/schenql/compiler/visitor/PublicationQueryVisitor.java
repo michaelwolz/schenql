@@ -54,7 +54,7 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
             }
 
             // Build select statement
-            return "SELECT " + String.join(", ", selectFields) + " FROM `publication`" +
+            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `publication`" +
                     Helper.addLimitations(queryLimitations);
         }
 

@@ -28,7 +28,7 @@ public class PersonQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .filter(Objects::nonNull)
                     .collect(toList());
 
-            // Add specialization
+            // Add specialization - TODO: This is wrong. It only checks if the person was an author or editor in some way
             QueryLimitation ql = new QueryLimitation();
             switch (ctx.PERSON().getText().substring(0, 4).toUpperCase()) {
                 case "AUTH":
@@ -44,7 +44,7 @@ public class PersonQueryVisitor extends SchenqlParserBaseVisitor<String> {
             }
 
             // Build select statement
-            return "SELECT " + String.join(", ", selectFields) + " FROM `person`" +
+            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `person`" +
                     Helper.addLimitations(queryLimitations);
         }
         return null;

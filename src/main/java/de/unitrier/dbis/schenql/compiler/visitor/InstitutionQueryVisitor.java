@@ -28,7 +28,7 @@ public class InstitutionQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     .collect(toList());
 
             // Build select statement
-            return "SELECT " + String.join(", ", selectFields) + " FROM `institution`" +
+            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `institution`" +
                     Helper.addLimitations(queryLimitations);
         }
         return null;
