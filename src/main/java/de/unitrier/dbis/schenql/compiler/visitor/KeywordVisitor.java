@@ -10,10 +10,10 @@ public class KeywordVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitKeywords(SchenqlParser.KeywordsContext ctx) {
         if (ctx.STRING().size() > 1) {
             ArrayList<String> keywords = new ArrayList<>();
-            ctx.STRING().forEach(keyword -> keywords.add(keyword.getText()));
+            ctx.STRING().forEach(keyword -> keywords.add("\"" + keyword.getText() + "\""));
             return String.join(",", keywords);
         } else {
-            return ctx.STRING(0).getText();
+            return "\"" + ctx.STRING(0).getText() + "\"";
         }
     }
 }

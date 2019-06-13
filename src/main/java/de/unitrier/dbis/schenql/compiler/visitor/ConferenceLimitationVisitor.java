@@ -34,7 +34,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
         if (ctx.ABOUT() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`conferenceKey`",
+                            "`conference_dblpKey`",
                             "`conference`.`dblpKey`"),
                     new Join("`publication_has_keyword`",
                             "`dblpKey`",
@@ -50,7 +50,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
         if (ctx.AFTER() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`conferenceKey`",
+                            "`conference_dblpKey`",
                             "`conference`.`dblpKey`"
                     )
             });
@@ -61,7 +61,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
         if (ctx.BEFORE() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`conferenceKey`",
+                            "`conference_dblpKey`",
                             "`conference`.`dblpKey`"
                     )
             });
@@ -72,7 +72,7 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
         if (ctx.IN_YEAR() != null) {
             ql.setJoins(new Join[]{
                     new Join("`publication`",
-                            "`conferenceKey`",
+                            "`conference_dblpKey`",
                             "`conference`.`dblpKey`"
                     )
             });
