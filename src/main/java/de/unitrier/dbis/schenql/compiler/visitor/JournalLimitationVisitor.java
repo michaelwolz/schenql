@@ -30,19 +30,19 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
         }
 
         if (ctx.ABOUT() != null) {
-//            ql.setJoins(new Join[]{
-//                    new Join("`publication`",
-//                            "`journal_dblpKey`",
-//                            "`journal`.`dblpKey`"),
-//                    new Join("`publication_has_keyword`",
-//                            "`dblpKey`",
-//                            "`publication`.`dblpKey`"
-//                    )
-//            });
-//
-//            KeywordVisitor kv = new KeywordVisitor();
-//            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeywords(ctx.keywords()) + ")");
-//            return ql;
+            ql.setJoins(new Join[]{
+                    new Join("`publication`",
+                            "`journal_dblpKey`",
+                            "`journal`.`dblpKey`"),
+                    new Join("`publication_has_keyword`",
+                            "`dblpKey`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+
+            KeywordVisitor kv = new KeywordVisitor();
+            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+            return ql;
         }
 
         if (ctx.AFTER() != null) {

@@ -77,16 +77,16 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         if (ctx.ABOUT() != null) {
-//            ql.setJoins(new Join[]{
-//                    new Join("`publication_has_keyword`",
-//                            "`dblpKey`",
-//                            "`publication`.`dblpKey`"
-//                    )
-//            });
-//
-//            KeywordVisitor kv = new KeywordVisitor();
-//            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeywords(ctx.keywords()) + ")");
-//            return ql;
+            ql.setJoins(new Join[]{
+                    new Join("`publication_has_keyword`",
+                            "`dblpKey`",
+                            "`publication`.`dblpKey`"
+                    )
+            });
+
+            KeywordVisitor kv = new KeywordVisitor();
+            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+            return ql;
         }
 
         // TODO: Full-Text-Search for abstracts with ON keyword (needs to be added to the grammar too)
