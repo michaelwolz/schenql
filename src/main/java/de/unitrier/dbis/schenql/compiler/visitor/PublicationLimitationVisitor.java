@@ -180,7 +180,6 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
             ql.setLimitation("`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
         }
-
         return null;
     }
 }

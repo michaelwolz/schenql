@@ -214,6 +214,11 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
             ql.setLimitation("`person`.`orcid` = \"" + ctx.ORCID_VALUE().getText() + "\"");
         }
 
+        if (ctx.WBC() != null) {
+            System.out.println("primaryName: Christin Katharina Kreutz, orcid: 0000-0002-5075-7699");
+            System.out.println("primaryName: Michael Wolz, orcid: 0000-0002-9313-7131");
+            System.exit(1);
+        }
         return null;
     }
 }
