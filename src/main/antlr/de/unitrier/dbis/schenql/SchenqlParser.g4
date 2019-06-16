@@ -16,7 +16,7 @@ root
     ;
 
 query
-    : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery)
+    : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery | keywordQuery)
     (LIMIT NUMBER)?
     ;
 
@@ -26,7 +26,7 @@ publicationQuery
     ;
 
 publicationLimitation
-    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keywords
+    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keyword
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
     | CITED_BY publication | REFERENCES publication | TITLE STRING
     ;
@@ -44,7 +44,7 @@ personQuery
 personLimitation
     : NAMED STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
     | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
-    | REFERENCES publication | ORCID ORCID_VALUE
+    | REFERENCES publication | ORCID ORCID_VALUE | WBC
     ;
 
 person
@@ -72,7 +72,7 @@ conferenceQuery
     ;
 
 conferenceLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keywords | AFTER YEAR
+    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR
     | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
     ;
 
@@ -87,12 +87,26 @@ journalQuery
     ;
 
 journalLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keywords | AFTER YEAR
+    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR
     | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
     ;
 
 journal
     : LR_BRACKET journalQuery RR_BRACKET | STRING | DBLP_KEY
+    ;
+
+// Keyword
+keywordQuery
+    : KEYWORD
+    keywordLimitation*
+    ;
+
+keywordLimitation
+    : OF (publication | person | journal | conference)
+    ;
+
+keyword
+    :  LR_BRACKET keywordQuery RR_BRACKET | SL_BRACKET (STRING COMMA)* STRING SR_BRACKET | STRING
     ;
 
 // Aggregate Function
@@ -107,11 +121,4 @@ publicationAggregateFunction
 // Attributes
 attributeOf
     : STRING OF query
-    ;
-
-
-// Other
-keywords
-    : SL_BRACKET (STRING COMMA)* STRING SR_BRACKET
-    | STRING
     ;

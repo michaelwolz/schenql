@@ -32,19 +32,19 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
         }
 
         if (ctx.ABOUT() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`conference_dblpKey`",
-                            "`conference`.`dblpKey`"),
-                    new Join("`publication_has_keyword`",
-                            "`dblpKey`",
-                            "`publication`.`dblpKey`"
-                    )
-            });
-
-            KeywordVisitor kv = new KeywordVisitor();
-            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeywords(ctx.keywords()) + ")");
-            return ql;
+//            ql.setJoins(new Join[]{
+//                    new Join("`publication`",
+//                            "`conference_dblpKey`",
+//                            "`conference`.`dblpKey`"),
+//                    new Join("`publication_has_keyword`",
+//                            "`dblpKey`",
+//                            "`publication`.`dblpKey`"
+//                    )
+//            });
+//
+//            KeywordVisitor kv = new KeywordVisitor();
+//            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeywords(ctx.keywords()) + ")");
+//            return ql;
         }
 
         if (ctx.AFTER() != null) {

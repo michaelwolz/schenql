@@ -8,6 +8,7 @@ package de.unitrier.dbis.schenql;
 CONFERENCE:             C O N F E R E N C E S?;
 INSTITUTION:            I N S T I T U T I O N S?;
 JOURNAL:                J O U R N A L S?;
+KEYWORD:                K E Y W O R D S?;
 PERSON:                 P E R S O N S?
                         | A U T H O R S?
                         | E D I T O R S?;
@@ -53,6 +54,7 @@ ORCID:                  O R C I D;
 ORCID_VALUE:            DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT DIGIT DIGIT '-'
                         DIGIT DIGIT DIGIT DIGIT '-' DIGIT DIGIT DIGIT DIGIT
                         ;
+WBC:                    W H O ' ' B E C A M E ' ' C R A Z Y;
 PUBLISHED_BY:           P U B L I S H E D ' ' B Y;
 PUBLISHED_IN:           P U B L I S H E D ' ' I N;
 PUBLISHED_WITH:         P U B L I S H E D ' ' W I T H;

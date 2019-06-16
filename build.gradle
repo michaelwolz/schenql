@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'de.uni-trier.dbis.schenql'
-version '1.0.1-SNAPSHOT'
+version '1.0.2-SNAPSHOT'
 
 sourceCompatibility = 11.0
 
@@ -53,3 +53,10 @@ task customFatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
+
+task copyJar(type: Copy) {
+    println("$buildDir/libs/schenql-full-${version}.jar")
+    from "$buildDir/libs/schenql-full-${version}.jar"
+    into System.getProperty("user.home") + "/schenql.jar"
+}
+copyJar.dependsOn customFatJar

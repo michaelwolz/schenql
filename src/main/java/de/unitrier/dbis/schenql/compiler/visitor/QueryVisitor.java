@@ -42,6 +42,16 @@ public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
             return query;
         }
 
+        if (ctx.keywordQuery() != null) {
+            KeywordQueryVisitor kqv = new KeywordQueryVisitor();
+            if (selectFields != null) {
+                query += kqv.visitKeywordQuery(ctx.keywordQuery(), selectFields);
+            } else {
+                query += kqv.visitKeywordQuery(ctx.keywordQuery());
+            }
+            return query;
+        }
+
         if (ctx.personQuery() != null) {
             PersonQueryVisitor pqv = new PersonQueryVisitor();
             if (selectFields != null) {
