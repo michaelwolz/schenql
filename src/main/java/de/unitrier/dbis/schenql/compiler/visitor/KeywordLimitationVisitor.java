@@ -17,7 +17,7 @@ public class KeywordLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
             joins.add(
                     new Join("`publication_has_keyword`",
                             "`keyword`",
-                            "`keyword`.`keyword"
+                            "`keyword`.`keyword`"
                     )
             );
             joins.add(
