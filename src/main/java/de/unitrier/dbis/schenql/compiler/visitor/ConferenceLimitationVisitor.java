@@ -80,6 +80,23 @@ public class ConferenceLimitationVisitor extends SchenqlParserBaseVisitor<QueryL
             return ql;
         }
 
+        if (ctx.OF() != null) {
+            ql.setJoins(new Join[]{
+                    new Join("`publication`",
+                            "`conference_dblpKey`",
+                            "`conference`.`dblpKey`"
+                    )
+            });
+
+            PublicationQueryVisitor pqv = new PublicationQueryVisitor();
+            ql.setLimitation("`conference`.`dblpKey` IN ( " +
+                    pqv.visitPublicationQuery(
+                            ctx.publication().publicationQuery(),
+                            new String[]{"`publication`.`conference_dblpKey`"}
+            ) + ")");
+            return ql;
+        }
+
         return null;
     }
 }

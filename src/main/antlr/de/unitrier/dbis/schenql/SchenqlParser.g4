@@ -72,7 +72,7 @@ conferenceQuery
     ;
 
 conferenceLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR
+    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
     ;
 
@@ -87,7 +87,7 @@ journalQuery
     ;
 
 journalLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR
+    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
     ;
 
