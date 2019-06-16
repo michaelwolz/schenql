@@ -93,9 +93,8 @@ public class Schenql {
         System.out.print(" ___) | (__| | | |  __/ | | | |_| | |___\n");
         System.out.print("|____/ \\___|_| |_|\\___|_| |_|\\__\\_\\_____|\n\n");
 
-        System.out.println("Welcome to SchenQL – The Schenkel Query Language");
-        System.out.println("Version: 1.0.1");
-        System.out.println("Type 'help;' for help. 'exit;' for exit.\n");
-        System.out.println("Documentation is available at: https://dbis.uni-trier.de/xxx\n");
+        System.out.println("Welcome to SchenQL – The Schenql Query Language");
+        System.out.println("Version: 1.0.2");
+        System.out.println("Type 'exit;' for exit.\n");
     }
 }

@@ -12,7 +12,6 @@ package de.unitrier.dbis.schenql;
 
 root
     : (aggregateFunction | query | attributeOf)
-    SEMI
     ;
 
 query
