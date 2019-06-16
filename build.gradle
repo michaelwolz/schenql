@@ -53,10 +53,3 @@ task customFatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
-
-task copyJar(type: Copy) {
-    println("$buildDir/libs/schenql-full-${version}.jar")
-    from "$buildDir/libs/schenql-full-${version}.jar"
-    into System.getProperty("user.home") 
-}
-copyJar.dependsOn customFatJar
