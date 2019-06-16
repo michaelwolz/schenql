@@ -13,6 +13,12 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
                     || ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`dblpKey`"});
             }
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalLimitationContext) {
+                return pqv.visitPublicationQuery(ctx.publicationQuery(),  new String[]{"`publication`.`journal_dblpKey`"});
+            }
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceLimitationContext) {
+                return pqv.visitPublicationQuery(ctx.publicationQuery(),  new String[]{"`publication`.`conference_dblpKey`"});
+            }
             return pqv.visitPublicationQuery(ctx.publicationQuery());
         } else if (ctx.DBLP_KEY() != null) {
             return ctx.DBLP_KEY().getText();
