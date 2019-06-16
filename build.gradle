@@ -57,6 +57,6 @@ task customFatJar(type: Jar) {
 task copyJar(type: Copy) {
     println("$buildDir/libs/schenql-full-${version}.jar")
     from "$buildDir/libs/schenql-full-${version}.jar"
-    into System.getProperty("user.home") + "/schenql.jar"
+    into System.getProperty("user.home") 
 }
 copyJar.dependsOn customFatJar
