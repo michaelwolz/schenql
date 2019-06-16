@@ -77,15 +77,21 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         if (ctx.ABOUT() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication_has_keyword`",
-                            "`dblpKey`",
-                            "`publication`.`dblpKey`"
-                    )
-            });
+            if (ctx.KEYWORD() != null) {
+                ql.setJoins(new Join[]{
+                        new Join("`publication_has_keyword`",
+                                "`dblpKey`",
+                                "`publication`.`dblpKey`"
+                        )
+                });
 
-            KeywordVisitor kv = new KeywordVisitor();
-            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+                KeywordVisitor kv = new KeywordVisitor();
+                ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+            } else {
+                ql.setLimitation("MATCH (`publication`.`abstract`) " +
+                    "AGAINST(\"" + ctx.STRING().getText() +
+                    "\" IN NATURAL LANGUAGE MODE)");
+            }
             return ql;
         }
 
@@ -133,7 +139,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                                 "`publication`.`dblpKey`")
                 });
 
-                ql.setLimitation("`journal`.`acronym` = "+ ctx.STRING().getText() +
+                ql.setLimitation("`journal`.`acronym` = " + ctx.STRING().getText() +
                         " OR `conference`.`acronym` = " + ctx.STRING().getText());
             }
             return ql;

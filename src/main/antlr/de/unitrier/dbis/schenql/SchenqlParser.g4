@@ -25,7 +25,7 @@ publicationQuery
     ;
 
 publicationLimitation
-    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT keyword
+    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT KEYWORD keyword | ABOUT STRING
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
     | CITED_BY publication | REFERENCES publication | TITLE STRING
     ;
@@ -71,7 +71,7 @@ conferenceQuery
     ;
 
 conferenceLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR | OF publication
+    : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
     ;
 
@@ -86,7 +86,7 @@ journalQuery
     ;
 
 journalLimitation
-    : NAMED STRING | ACRONYM STRING | ABOUT keyword | AFTER YEAR | OF publication
+    : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
     ;
 
