@@ -11,7 +11,7 @@ package de.unitrier.dbis.schenql;
 }
 
 root
-    : (aggregateFunction | query | attributeOf)
+    : (functionCall | query | attributeOf)
     ;
 
 query
@@ -21,7 +21,7 @@ query
 
 // Publications
 publicationQuery
-    : publicationAggregateFunction | PUBLICATION publicationLimitation*
+    : publicationFunction | PUBLICATION publicationLimitation*
     ;
 
 publicationLimitation
@@ -32,6 +32,10 @@ publicationLimitation
 
 publication
     : LR_BRACKET publicationQuery RR_BRACKET | DBLP_KEY | STRING
+    ;
+
+publicationFunction
+    : MOST_CITED LR_BRACKET publicationQuery RR_BRACKET
     ;
 
 // Persons
@@ -108,13 +112,9 @@ keyword
     :  LR_BRACKET keywordQuery RR_BRACKET | SL_BRACKET (STRING COMMA)* STRING SR_BRACKET | STRING
     ;
 
-// Aggregate Function
-aggregateFunction
+// Function
+functionCall
     : COUNT LR_BRACKET query RR_BRACKET
-    ;
-
-publicationAggregateFunction
-    : MOST_CITED LR_BRACKET publicationQuery RR_BRACKET
     ;
 
 // Attributes

@@ -5,9 +5,9 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 
 import javax.management.Query;
 
-public class AggregateFunctionVisitor extends SchenqlParserBaseVisitor<String> {
+public class FunctionCallVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
-    public String visitAggregateFunction(SchenqlParser.AggregateFunctionContext ctx) {
+    public String visitFunctionCall(SchenqlParser.FunctionCallContext ctx) {
         if (ctx.COUNT() != null) {
             QueryVisitor qv = new QueryVisitor();
             return "SELECT COUNT(*) as \"Count\" FROM (" + qv.visitQuery(ctx.query()) + ") as count";

@@ -3,9 +3,9 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 
-public class PublicationAggregateFunctionVisitor extends SchenqlParserBaseVisitor<String> {
+public class PublicationFunctionVisitor extends SchenqlParserBaseVisitor<String> {
     @Override
-    public String visitPublicationAggregateFunction(SchenqlParser.PublicationAggregateFunctionContext ctx) {
+    public String visitPublicationFunction(SchenqlParser.PublicationFunctionContext ctx) {
         if (ctx.MOST_CITED() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
             if (!(ctx.getParent().getParent().getRuleContext() instanceof SchenqlParser.QueryContext)) {

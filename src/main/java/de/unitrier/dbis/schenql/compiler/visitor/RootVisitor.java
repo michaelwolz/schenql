@@ -18,16 +18,13 @@ public class RootVisitor extends SchenqlParserBaseVisitor<String> {
 
             if (ctx.query().LIMIT() != null) {
                 limit = ctx.query().NUMBER().getText();
-            } else if (ctx.query().publicationQuery() != null &&
-                    ctx.query().publicationQuery().publicationAggregateFunction() != null) { // I really don't like this
-                limit = "5";
             }
             query += " LIMIT " + limit;
         }
 
-        if (ctx.aggregateFunction() != null) {
-            AggregateFunctionVisitor av = new AggregateFunctionVisitor();
-            query += av.visitAggregateFunction(ctx.aggregateFunction());
+        if (ctx.functionCall() != null) {
+            FunctionCallVisitor av = new FunctionCallVisitor();
+            query += av.visitFunctionCall(ctx.functionCall());
         }
 
         if (ctx.attributeOf() != null) {

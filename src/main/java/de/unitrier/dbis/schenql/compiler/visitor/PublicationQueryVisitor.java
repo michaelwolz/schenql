@@ -58,9 +58,9 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
                     Helper.addLimitations(queryLimitations);
         }
 
-        if (ctx.publicationAggregateFunction() != null) {
-            PublicationAggregateFunctionVisitor paf = new PublicationAggregateFunctionVisitor();
-            return paf.visitPublicationAggregateFunction(ctx.publicationAggregateFunction());
+        if (ctx.publicationFunction() != null) {
+            PublicationFunctionVisitor pfv = new PublicationFunctionVisitor();
+            return pfv.visitPublicationFunction(ctx.publicationFunction());
         }
 
         return null;
