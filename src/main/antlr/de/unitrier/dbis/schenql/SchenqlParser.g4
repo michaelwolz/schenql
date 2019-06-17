@@ -16,7 +16,25 @@ root
 
 query
     : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery | keywordQuery)
+    logicalOperator?
     (LIMIT NUMBER)?
+    ;
+
+// Logical Operators
+logicalOperator
+    : (or | and)
+    ;
+
+or
+    : OR (query | not)
+    ;
+
+and
+    : AND (query | not)
+    ;
+
+not
+    : NOT query
     ;
 
 // Publications

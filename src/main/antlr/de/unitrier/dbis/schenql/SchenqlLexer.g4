@@ -68,6 +68,11 @@ COUNT:                  C O U N T;
 LIMIT:                  L I M I T;
 MOST_CITED:             M O S T ' ' C I T E D;
 
+// Logical Operators
+OR:                     O R | '||';
+AND:                    A N D | '&&';
+NOT:                    N O T | '!';
+
 
 // Data types
 STRING:                 (DOUBLE_QUOTE_SYMB ~('\r' | '\n' | '"')* DOUBLE_QUOTE_SYMB
