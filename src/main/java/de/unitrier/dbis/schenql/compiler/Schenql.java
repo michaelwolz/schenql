@@ -16,7 +16,7 @@ import org.jline.terminal.TerminalBuilder;
 
 
 public class Schenql {
-    static final boolean EXACT_MATCH_STRINGS = false;
+    static final boolean EXACT_MATCH_STRINGS = true;
     public static final int DEFAULT_QUERY_LIMIT = 100;
     private static final boolean DEBUG_MODE = true;
 

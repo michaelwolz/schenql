@@ -21,7 +21,11 @@ public class PersonLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimit
                             "`person`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`person_names`.`name` " + Helper.sqlStringComparison(ctx.STRING().getText()));
+            if (ctx.TILDE() != null) {
+                ql.setLimitation("`person_names`.`name` SOUNDS LIKE '" + ctx.STRING().getText() + "'");
+            } else {
+                ql.setLimitation("`person_names`.`name` = '" + ctx.STRING().getText() + "'");
+            }
             return ql;
         }
 

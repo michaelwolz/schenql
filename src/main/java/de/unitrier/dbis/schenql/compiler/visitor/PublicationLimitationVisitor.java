@@ -89,8 +89,8 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                 ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
             } else {
                 ql.setLimitation("MATCH (`publication`.`abstract`) " +
-                    "AGAINST(\"" + ctx.STRING().getText() +
-                    "\" IN NATURAL LANGUAGE MODE)");
+                        "AGAINST(\"" + ctx.STRING().getText() +
+                        "\" IN NATURAL LANGUAGE MODE)");
             }
             return ql;
         }
@@ -180,10 +180,11 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
         }
 
         if (ctx.TITLE() != null) {
-//            ql.setLimitation("MATCH (`publication`.`title`) " +
-//                    "AGAINST(\"" + ctx.STRING().getText() +
-//                    "\" IN NATURAL LANGUAGE MODE)");
-            ql.setLimitation("`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText()));
+            if (ctx.TILDE() != null) {
+                ql.setLimitation("MATCH (`publication`.`title`) AGAINST('" + ctx.STRING().getText() + "')");
+            } else {
+                ql.setLimitation("`publication`.`title` = '" + ctx.STRING().getText() + "'");
+            }
             return ql;
         }
         return null;
