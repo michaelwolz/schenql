@@ -1,30 +1,25 @@
-package de.unitrier.dbis.schenql.compiler.SQLQueryBuilder;
+package de.unitrier.dbis.schenql.sqlquerybuilder;
 
 class SQLFrom {
-    private String tableName;
+    private SQLTable tableName;
     private String alias;
     private SQLQuery subQuery;
 
-    SQLFrom(String tableName) {
-        this.tableName = tableName;
+    public SQLFrom(String tableName) {
+        this.tableName = new SQLTable(tableName);
     }
 
-    SQLFrom(String tableName, String alias) {
-        this.tableName = tableName;
-        this.alias = alias;
-    }
-
-    SQLFrom(SQLQuery subQuery, String alias) {
+    public SQLFrom(SQLQuery subQuery, String alias) {
         this.subQuery = subQuery;
         this.alias = alias;
     }
 
     private String createSubQueryStatement() {
-        return "";
+        return "(" + subQuery.buildQuery() + ") as " + this.alias;
     }
 
     private String createDefaultStatement() {
-        return "";
+        return alias != null ? tableName.getQueryString() + " as " + alias : tableName.getQueryString();
     }
 
     String getStatement() {
