@@ -5,7 +5,33 @@ class SQLFrom {
     private String alias;
     private SQLQuery subQuery;
 
-    String getStatement() {
+    SQLFrom(String tableName) {
+        this.tableName = tableName;
+    }
+
+    SQLFrom(String tableName, String alias) {
+        this.tableName = tableName;
+        this.alias = alias;
+    }
+
+    SQLFrom(SQLQuery subQuery, String alias) {
+        this.subQuery = subQuery;
+        this.alias = alias;
+    }
+
+    private String createSubQueryStatement() {
         return "";
+    }
+
+    private String createDefaultStatement() {
+        return "";
+    }
+
+    String getStatement() {
+        if (subQuery != null) {
+            return createSubQueryStatement();
+        } else {
+            return createDefaultStatement();
+        }
     }
 }
