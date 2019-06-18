@@ -45,11 +45,11 @@ publicationQuery
 publicationLimitation
     : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT KEYWORD keyword | ABOUT STRING
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
-    | CITED_BY publication | REFERENCES publication | TITLE STRING
+    | CITED_BY publication | REFERENCES publication | TITLE TILDE? STRING
     ;
 
 publication
-    : LR_BRACKET publicationQuery RR_BRACKET | DBLP_KEY | STRING
+    : LR_BRACKET publicationQuery RR_BRACKET | DBLP_KEY | TILDE? STRING
     ;
 
 publicationFunction
@@ -63,13 +63,13 @@ personQuery
     ;
 
 personLimitation
-    : NAMED STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
+    : NAMED TILDE? STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
     | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
     | REFERENCES publication | ORCID ORCID_VALUE | WBC
     ;
 
 person
-    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | ORCID_VALUE | STRING; // Orcid
+    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | ORCID_VALUE | TILDE? STRING; // Orcid
 
 // Institutions
 
@@ -79,11 +79,11 @@ institutionQuery
     ;
 
 institutionLimitation
-    : NAMED STRING | CITY STRING | COUNTRY STRING | MEMBERS person
+    : NAMED TILDE? STRING | CITY STRING | COUNTRY STRING | MEMBERS person
     ;
 
 institution
-    : LR_BRACKET institutionQuery RR_BRACKET | STRING
+    : LR_BRACKET institutionQuery RR_BRACKET | TILDE? STRING
     ;
 
 // Conferences

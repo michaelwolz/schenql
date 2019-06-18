@@ -95,6 +95,7 @@ COMMA:                  ',';
 SEMI:                   ';';
 SINGLE_QUOTE_SYMB:      '\'';
 DOUBLE_QUOTE_SYMB:      '"';
+TILDE:                  '~';
 
 // Ignore Spaces
 SPACE:                  [ \t\r\n]+ -> skip;
