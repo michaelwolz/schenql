@@ -9,7 +9,6 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitPublication(SchenqlParser.PublicationContext ctx) {
         if (ctx.publicationQuery() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-            System.out.println("Hallo");
             if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationLimitationContext
                     || ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`dblpKey`"});
@@ -24,8 +23,6 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
         } else if (ctx.DBLP_KEY() != null) {
             return ctx.DBLP_KEY().getText();
         } else {
-//            return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
-//                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")";
             // TODO: This is not nice
             if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalLimitationContext) {
                 return "SELECT `publication`.`journal_dblpKey` FROM `publication` WHERE " +
@@ -37,6 +34,13 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
             }
             return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
                     "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
+
+            // Is it necessary to have a full text match when using titles as literal?
+/*            return "SELECT `fulltext_match`.`dblpKey` FROM (SELECT `publication`.`dblpKey`, " +
+                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\") as `relevance`" +
+                    "FROM `publication`" +
+                    "WHERE MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")" +
+                    "ORDER BY `relevance` DESC) as `fulltext_match`";*/
         }
     }
 }

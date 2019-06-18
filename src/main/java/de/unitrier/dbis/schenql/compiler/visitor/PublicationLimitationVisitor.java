@@ -50,7 +50,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
             return ql;
         }
 
-        // Published by TODO: Data is not sufficient for this, just using a approach for this
+        // Note: Data is not sufficient for this
         if (ctx.PUBLISHED_BY() != null) {
             ql.setJoins(new Join[]{
                     new Join(
