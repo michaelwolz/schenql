@@ -21,7 +21,6 @@ public class SQLQuery {
     public void addCondition() {
     }
 
-
     public void addGroupBy() {
     }
 
@@ -44,11 +43,32 @@ public class SQLQuery {
         return fromString.toString();
     }
 
-    public String createQuery() {
+    private String createJoins() {
+    }
+
+    private String createConditions() {
+    }
+
+    private String createGroupBy() {
+    }
+
+    private String createOrderBy() {
+    }
+
+    private String createLimit() {
+        return "LIMIT " + this.limit;
+    }
+
+    public String buildQuery() {
         StringJoiner query = new StringJoiner(" ");
         query.add("SELECT");
         query.add(createSelectFields());
         query.add(createFrom());
-        return query.toString();
+        query.add(createJoins());
+        query.add(createConditions());
+        query.add(createGroupBy());
+        query.add(createOrderBy());
+        query.add(createLimit());
+        return query.toString() + ";";
     }
 }
