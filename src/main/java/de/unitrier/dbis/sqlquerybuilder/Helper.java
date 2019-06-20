@@ -1,6 +1,6 @@
-package de.unitrier.dbis.schenql.sqlquerybuilder;
+package de.unitrier.dbis.sqlquerybuilder;
 
-public class SQLHelper {
+public class Helper {
     public static String encloseInApostrophe(String str) {
         return "`" + str + "`";
     }

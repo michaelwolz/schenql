@@ -33,6 +33,11 @@ generateGrammarSource {
 }
 compileJava.dependsOn generateGrammarSource
 
+test {
+    useJUnit()
+    maxHeapSize="1G"
+}
+
 jar {
     manifest {
         attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.Schenql"

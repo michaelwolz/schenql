@@ -1,57 +1,60 @@
-package de.unitrier.dbis.schenql.sqlquerybuilder;
+package de.unitrier.dbis.sqlquerybuilder;
 
 import de.unitrier.dbis.schenql.sqlquerybuilder.condition.*;
+import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
+import de.unitrier.dbis.sqlquerybuilder.condition.ConditionGroup;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
-public class SQLQuery {
-    private ArrayList<SQLSelect> select = new ArrayList<>();
-    private ArrayList<SQLFrom> from = new ArrayList<>();
-    private ArrayList<SQLJoin> joins = new ArrayList<>();
-    private ArrayList<SQLCondition> conditions = new ArrayList<>();
-    private ArrayList<SQLGroupBy> groupBy = new ArrayList<>();
-    private ArrayList<SQLOrderBy> orderBy = new ArrayList<>();
+public class Query {
+    private ArrayList<Select> select = new ArrayList<>();
+    private ArrayList<From> from = new ArrayList<>();
+    private ArrayList<Join> joins = new ArrayList<>();
+    private ArrayList<Condition> conditions = new ArrayList<>();
+    private ArrayList<GroupBy> groupBy = new ArrayList<>();
+    private ArrayList<OrderBy> orderBy = new ArrayList<>();
     private int limit = 0;
+    public boolean isSubQuery = false;
 
     public void addSelect(String selectField) {
-        select.add(new SQLSelect(selectField));
+        select.add(new Select(selectField));
     }
 
     public void addSelect(String tableName, String selectField) {
-        select.add(new SQLSelect(tableName, selectField));
+        select.add(new Select(tableName, selectField));
     }
 
     public void addFrom(String fromTable) {
-        from.add(new SQLFrom(fromTable));
+        from.add(new From(fromTable));
     }
 
-    public void addFrom(SQLQuery subQuery, String alias) {
-        from.add(new SQLFrom(subQuery, alias));
+    public void addFrom(Query subQuery, String alias) {
+        from.add(new From(subQuery, alias));
     }
 
     public void addJoin(String joinTable, String joinField, String onTable, String onField) {
-        joins.add(new SQLJoin(joinTable, joinField, onTable, onField));
+        joins.add(new Join(joinTable, joinField, onTable, onField));
     }
 
-    public void addCondition(SQLBooleanCondition condition) {
+    public void addCondition(Condition condition) {
         conditions.add(condition);
     }
 
     public void addGroupBy(String groupByField) {
-        groupBy.add(new SQLGroupBy(groupByField));
+        groupBy.add(new GroupBy(groupByField));
     }
 
     public void addGroupBy(String groupByTable, String groupByField) {
-        groupBy.add(new SQLGroupBy(groupByTable, groupByField));
+        groupBy.add(new GroupBy(groupByTable, groupByField));
     }
 
     public void addOrderBy(String orderByField) {
-        orderBy.add(new SQLOrderBy(orderByField));
+        orderBy.add(new OrderBy(orderByField));
     }
 
     public void addOrderBy(String orderByTable, String orderByField) {
-        orderBy.add(new SQLOrderBy(orderByTable, orderByField));
+        orderBy.add(new OrderBy(orderByTable, orderByField));
     }
 
     public void addLimit(int limit) {
@@ -60,7 +63,7 @@ public class SQLQuery {
 
     private String createSelectFields() {
         StringJoiner selectString = new StringJoiner(", ");
-        for (SQLSelect selectField : select) {
+        for (Select selectField : select) {
             selectString.add(selectField.getStatement());
         }
         return selectString.toString();
@@ -68,7 +71,7 @@ public class SQLQuery {
 
     private String createFrom() {
         StringJoiner fromString = new StringJoiner(", ");
-        for (SQLFrom fromTable : from) {
+        for (From fromTable : from) {
             fromString.add(fromTable.getStatement());
         }
         return fromString.toString();
@@ -76,7 +79,7 @@ public class SQLQuery {
 
     private String createJoins() {
         StringJoiner joinString = new StringJoiner(" ");
-        for (SQLJoin join : joins) {
+        for (Join join : joins) {
             joinString.add("JOIN");
             joinString.add(join.createStatement());
         }
@@ -84,23 +87,12 @@ public class SQLQuery {
     }
 
     private String createConditions() {
-        StringJoiner condString = new StringJoiner(" ");
-        for (int i = 0; i < conditions.size(); i++) {
-            if (i > 0) {
-                SQLCondition cond = conditions.get(i);
-                condString.add(cond.or ? "OR" : "AND");
-                if (cond.negate) {
-                    condString.add("NOT");
-                }
-            }
-            condString.add(conditions.get(i).createStatement());
-        }
-        return condString.toString();
+        return ConditionGroup.createGroupedStatement(conditions);
     }
 
     private String createGroupBy() {
         StringJoiner groupByString = new StringJoiner(", ");
-        for (SQLGroupBy groupByField : groupBy) {
+        for (GroupBy groupByField : groupBy) {
             groupByString.add(groupByField.createStatement());
         }
         return groupByString.toString();
@@ -108,7 +100,7 @@ public class SQLQuery {
 
     private String createOrderBy() {
         StringJoiner orderByString = new StringJoiner(", ");
-        for (SQLOrderBy orderByField : orderBy) {
+        for (OrderBy orderByField : orderBy) {
             orderByString.add(orderByField.createStatement());
         }
         return orderByString.toString();
@@ -116,6 +108,7 @@ public class SQLQuery {
 
     public String buildQuery() {
         StringJoiner query = new StringJoiner(" ");
+
         // SELECT
         query.add("SELECT");
         if (select.size() > 0) {
@@ -159,6 +152,11 @@ public class SQLQuery {
             query.add(Integer.toString(limit));
         }
 
-        return query.toString() + ";";
+        // End
+        if (!isSubQuery) {
+            return query.toString() + ";";
+        } else {
+            return query.toString();
+        }
     }
 }

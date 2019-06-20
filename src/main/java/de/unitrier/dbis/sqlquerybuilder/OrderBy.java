@@ -1,17 +1,17 @@
-package de.unitrier.dbis.schenql.sqlquerybuilder;
+package de.unitrier.dbis.sqlquerybuilder;
 
-public class SQLOrderBy {
-    private SQLTable tableName;
-    private SQLField fieldName;
+public class OrderBy {
+    private Table tableName;
+    private Field fieldName;
     private String sortOrder = "ASC";
 
-    SQLOrderBy(String fieldName) {
-        this.fieldName = new SQLField(fieldName);
+    OrderBy(String fieldName) {
+        this.fieldName = new Field(fieldName);
     }
 
-    SQLOrderBy(String tableName, String fieldName) {
-        this.tableName = new SQLTable(tableName);
-        this.fieldName = new SQLField(fieldName);
+    OrderBy(String tableName, String fieldName) {
+        this.tableName = new Table(tableName);
+        this.fieldName = new Field(fieldName);
     }
 
     public void setSortOrder(String order) {
