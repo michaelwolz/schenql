@@ -3,43 +3,41 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.Schenql;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-public class RootVisitor extends SchenqlParserBaseVisitor<String> {
+public class RootVisitor extends SchenqlParserBaseVisitor<Query> {
     @Override
-    public String visitRoot(SchenqlParser.RootContext ctx) {
-        String query = "";
+    public Query visitRoot(SchenqlParser.RootContext ctx) {
+        Query sqlQuery = new Query();
 
         if (ctx.query() != null) {
             QueryVisitor qv = new QueryVisitor();
-            query += qv.visitQuery(ctx.query());
+            qv.visitQuery(ctx.query(), sqlQuery, null);
 
             // Limit output
-            String limit = Integer.toString(Schenql.DEFAULT_QUERY_LIMIT);
-
-            if (ctx.query().LIMIT() != null) {
-                limit = ctx.query().NUMBER().getText();
-            }
-            query += " LIMIT " + limit;
+            if (ctx.query().LIMIT() != null)
+                sqlQuery.addLimit(Integer.parseInt(ctx.query().NUMBER().getText()));
+            else
+                sqlQuery.addLimit(Schenql.DEFAULT_QUERY_LIMIT);
         }
 
         if (ctx.functionCall() != null) {
             FunctionCallVisitor av = new FunctionCallVisitor();
-            query += av.visitFunctionCall(ctx.functionCall());
+            av.visitFunctionCall(ctx.functionCall());
         }
 
         if (ctx.attributeOf() != null) {
             AttributeOfVisitor aov = new AttributeOfVisitor();
-            query += aov.visitAttributeOf(ctx.attributeOf());
+            aov.visitAttributeOf(ctx.attributeOf());
 
             // Limit output
             if (ctx.attributeOf().query().LIMIT() != null) {
-                query += " LIMIT " + ctx.attributeOf().query().NUMBER();
+                sqlQuery.addLimit(Integer.parseInt(ctx.attributeOf().query().NUMBER().getText()));
             } else {
-                query += " LIMIT " + Schenql.DEFAULT_QUERY_LIMIT;
+                sqlQuery.addLimit(Schenql.DEFAULT_QUERY_LIMIT);
             }
         }
 
-        query += ";";
-        return query;
+        return sqlQuery;
     }
 }

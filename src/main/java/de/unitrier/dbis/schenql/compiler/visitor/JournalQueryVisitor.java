@@ -4,7 +4,7 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
 import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.schenql.compiler.QueryCondition;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +19,10 @@ public class JournalQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
     public String visitJournalQuery(SchenqlParser.JournalQueryContext ctx, String[] selectFields) {
         if (ctx.JOURNAL() != null) {
-            JournalLimitationVisitor plv = new JournalLimitationVisitor();
+            JournalConditionVisitor plv = new JournalConditionVisitor();
 
-            // Getting limitations from child nodes
-            List<QueryLimitation> queryLimitations = ctx.journalLimitation()
+            // Getting conditions from child nodes
+            List<QueryCondition> queryConditions = ctx.journalCondition()
                     .stream()
                     .map(ql -> ql.accept(plv))
                     .filter(Objects::nonNull)
@@ -30,7 +30,7 @@ public class JournalQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
             // Build select statement
             return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `journal`" +
-                    Helper.addLimitations(queryLimitations);
+                    Helper.addConditions(queryConditions);
         }
         return null;
     }

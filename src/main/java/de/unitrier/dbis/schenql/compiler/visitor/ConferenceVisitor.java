@@ -3,23 +3,20 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.Helper;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-public class ConferenceVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitConference(SchenqlParser.ConferenceContext ctx) {
+public class ConferenceVisitor extends SchenqlParserBaseVisitor<Void> {
+    public void visitConference(SchenqlParser.ConferenceContext ctx, Query sqlQuery) {
         if (ctx.conferenceQuery() != null) {
             ConferenceQueryVisitor jqv = new ConferenceQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
-                return jqv.visitConferenceQuery(ctx.conferenceQuery(), new String[]{"`conference`.`dblpKey`"});
-            }
-            return jqv.visitConferenceQuery(ctx.conferenceQuery());
+            jqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, null);
         } else {
-            return defaultQuery(ctx.STRING().getText());
+            // defaultQuery(ctx.STRING().getText());
         }
     }
 
-    static String defaultQuery(String acronym)  {
-        return "SELECT `conference`.`dblpKey` FROM `conference` "
-                + "WHERE `conference`.`acronym` = \"" + acronym + "\"";
-    }
+//    static String defaultQuery(String acronym)  {
+//        "SELECT `conference`.`dblpKey` FROM `conference` "
+//                + "WHERE `conference`.`acronym` = \"" + acronym + "\"";
+//    }
 }

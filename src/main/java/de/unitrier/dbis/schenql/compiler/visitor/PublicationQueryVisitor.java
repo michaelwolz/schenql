@@ -4,7 +4,7 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
 import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.schenql.compiler.QueryCondition;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,43 +19,43 @@ public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
     String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, String[] selectFields) {
         if (ctx.PUBLICATION() != null) {
-            PublicationLimitationVisitor plv = new PublicationLimitationVisitor();
+            PublicationConditionVisitor plv = new PublicationConditionVisitor();
 
-            // Getting limitations from child nodes
-            List<QueryLimitation> queryLimitations = ctx.publicationLimitation()
+            // Getting conditions from child nodes
+            List<QueryCondition> queryConditions = ctx.publicationCondition()
                     .stream()
                     .map(ql -> ql.accept(plv))
                     .filter(Objects::nonNull)
                     .collect(toList());
 
             // Add specialization
-            QueryLimitation ql = new QueryLimitation();
+            QueryCondition ql = new QueryCondition();
             switch (ctx.PUBLICATION().getText().substring(0, 4).toUpperCase()) {
                 case "BOOK":
-                    ql.setLimitation("`publication`.`type` = \"book\"");
-                    queryLimitations.add(ql);
+                    ql.setCondition("`publication`.`type` = \"book\"");
+                    queryConditions.add(ql);
                     break;
                 case "ARTI":
-                    ql.setLimitation("`publication`.`type` = \"article\"");
-                    queryLimitations.add(ql);
+                    ql.setCondition("`publication`.`type` = \"article\"");
+                    queryConditions.add(ql);
                     break;
                 case "PHDT":
-                    ql.setLimitation("`publication`.`type` = \"phdthesis\"");
-                    queryLimitations.add(ql);
+                    ql.setCondition("`publication`.`type` = \"phdthesis\"");
+                    queryConditions.add(ql);
                     break;
                 case "MAST":
-                    ql.setLimitation("`publication`.`type` = \"masterthesis\"");
-                    queryLimitations.add(ql);
+                    ql.setCondition("`publication`.`type` = \"masterthesis\"");
+                    queryConditions.add(ql);
                     break;
                 case "INPR":
-                    ql.setLimitation("`publication`.`type` = \"inproceedings\"");
-                    queryLimitations.add(ql);
+                    ql.setCondition("`publication`.`type` = \"inproceedings\"");
+                    queryConditions.add(ql);
                     break;
             }
 
             // Build select statement
             return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `publication`" +
-                    Helper.addLimitations(queryLimitations);
+                    Helper.addConditions(queryConditions);
         }
 
         if (ctx.publicationFunction() != null) {

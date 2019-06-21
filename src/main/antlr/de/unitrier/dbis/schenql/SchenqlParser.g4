@@ -39,10 +39,10 @@ not
 
 // Publications
 publicationQuery
-    : publicationFunction | PUBLICATION publicationLimitation*
+    : publicationFunction | PUBLICATION publicationCondition*
     ;
 
-publicationLimitation
+publicationCondition
     : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT KEYWORD keyword | ABOUT STRING
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
     | CITED_BY publication | REFERENCES publication | TITLE TILDE? STRING
@@ -59,10 +59,10 @@ publicationFunction
 // Persons
 personQuery
     : PERSON
-    personLimitation*
+    personCondition*
     ;
 
-personLimitation
+personCondition
     : NAMED TILDE? STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
     | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
     | REFERENCES publication | ORCID ORCID_VALUE | WBC
@@ -75,10 +75,10 @@ person
 
 institutionQuery
     : INSTITUTION
-    institutionLimitation*
+    institutionCondition*
     ;
 
-institutionLimitation
+institutionCondition
     : NAMED TILDE? STRING | CITY STRING | COUNTRY STRING | MEMBERS person
     ;
 
@@ -89,10 +89,10 @@ institution
 // Conferences
 conferenceQuery
     : CONFERENCE
-    conferenceLimitation*
+    conferenceCondition*
     ;
 
-conferenceLimitation
+conferenceCondition
     : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
     ;
@@ -104,10 +104,10 @@ conference
 // Journals
 journalQuery
     : JOURNAL
-    journalLimitation*
+    journalCondition*
     ;
 
-journalLimitation
+journalCondition
     : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
     | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
     ;
@@ -119,10 +119,10 @@ journal
 // Keyword
 keywordQuery
     : KEYWORD
-    keywordLimitation*
+    keywordCondition*
     ;
 
-keywordLimitation
+keywordCondition
     : OF (publication | person | journal | conference)
     ;
 

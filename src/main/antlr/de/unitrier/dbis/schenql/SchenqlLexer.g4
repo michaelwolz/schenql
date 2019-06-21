@@ -30,7 +30,7 @@ DBLP_KEY:               (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
                         (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
                         ;
 
-// Limitations
+// Conditions
 fragment DIGIT:         '0'..'9';
 
 ABOUT:                  A B O U T;

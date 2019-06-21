@@ -2,76 +2,63 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.Select;
 
-public class QueryVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitQuery(SchenqlParser.QueryContext ctx) {
-        return visitQuery(ctx, null);
-    }
-
-    String visitQuery(SchenqlParser.QueryContext ctx, String[] selectFields) {
-        String query = "";
-
+class QueryVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitQuery(SchenqlParser.QueryContext ctx, Query sqlQuery, Select[] selectFields) {
         if (ctx.conferenceQuery() != null) {
             ConferenceQueryVisitor cqv = new ConferenceQueryVisitor();
             if (selectFields != null) {
-                query += cqv.visitConferenceQuery(ctx.conferenceQuery(), selectFields);
+                cqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, selectFields);
             } else {
-                query += cqv.visitConferenceQuery(ctx.conferenceQuery());
+                cqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, null);
             }
-            return query;
         }
 
         if (ctx.institutionQuery() != null) {
             InstitutionQueryVisitor iqv = new InstitutionQueryVisitor();
             if (selectFields != null) {
-                query += iqv.visitInstitutionQuery(ctx.institutionQuery(), selectFields);
+                iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery, selectFields);
             } else {
-                query += iqv.visitInstitutionQuery(ctx.institutionQuery());
+                iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery, null);
             }
-            return query;
         }
 
         if (ctx.journalQuery() != null) {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
             if (selectFields != null) {
-                query += jqv.visitJournalQuery(ctx.journalQuery(), selectFields);
+                jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery, selectFields);
             } else {
-                query += jqv.visitJournalQuery(ctx.journalQuery());
+                jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery, null);
             }
-            return query;
         }
 
         if (ctx.keywordQuery() != null) {
             KeywordQueryVisitor kqv = new KeywordQueryVisitor();
             if (selectFields != null) {
-                query += kqv.visitKeywordQuery(ctx.keywordQuery(), selectFields);
+                kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery, selectFields);
             } else {
-                query += kqv.visitKeywordQuery(ctx.keywordQuery());
+                kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery, null);
             }
-            return query;
         }
 
         if (ctx.personQuery() != null) {
             PersonQueryVisitor pqv = new PersonQueryVisitor();
             if (selectFields != null) {
-                query += pqv.visitPersonQuery(ctx.personQuery(), selectFields);
+                pqv.visitPersonQuery(ctx.personQuery(), sqlQuery, selectFields);
             } else {
-                query += pqv.visitPersonQuery(ctx.personQuery());
+                pqv.visitPersonQuery(ctx.personQuery(), sqlQuery, null);
             }
-            return query;
         }
 
         if (ctx.publicationQuery() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
             if (selectFields != null) {
-                query += pqv.visitPublicationQuery(ctx.publicationQuery(), selectFields);
+                pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery, selectFields);
             } else {
-                query += pqv.visitPublicationQuery(ctx.publicationQuery());
+                pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery, null);
             }
-            return query;
         }
-
-        return query;
     }
 }

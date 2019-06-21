@@ -9,14 +9,14 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitPublication(SchenqlParser.PublicationContext ctx) {
         if (ctx.publicationQuery() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationLimitationContext
-                    || ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationConditionContext
+                    || ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonConditionContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`dblpKey`"});
             }
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalConditionContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`journal_dblpKey`"});
             }
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceConditionContext) {
                 return pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{"`publication`.`conference_dblpKey`"});
             }
             return pqv.visitPublicationQuery(ctx.publicationQuery());
@@ -24,11 +24,11 @@ public class PublicationVisitor extends SchenqlParserBaseVisitor<String> {
             return ctx.DBLP_KEY().getText();
         } else {
             // TODO: This is not nice
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalConditionContext) {
                 return "SELECT `publication`.`journal_dblpKey` FROM `publication` WHERE " +
                         "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
             }
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceConditionContext) {
                 return "SELECT `publication`.`conference_dblpKey` FROM `publication` WHERE " +
                         "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
             }

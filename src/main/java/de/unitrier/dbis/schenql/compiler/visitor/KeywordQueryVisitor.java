@@ -4,7 +4,7 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
 import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.schenql.compiler.QueryCondition;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +19,10 @@ public class KeywordQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
     public String visitKeywordQuery(SchenqlParser.KeywordQueryContext ctx, String[] selectFields) {
         if (ctx.KEYWORD() != null) {
-            KeywordLimitationVisitor klv = new KeywordLimitationVisitor();
+            KeywordConditionVisitor klv = new KeywordConditionVisitor();
 
-            // Getting limitations from child nodes
-            List<QueryLimitation> queryLimitations = ctx.keywordLimitation()
+            // Getting conditions from child nodes
+            List<QueryCondition> queryConditions = ctx.keywordCondition()
                     .stream()
                     .map(ql -> ql.accept(klv))
                     .filter(Objects::nonNull)
@@ -30,7 +30,7 @@ public class KeywordQueryVisitor extends SchenqlParserBaseVisitor<String> {
 
             // Build select statement
             return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `keyword`" +
-                    Helper.addLimitations(queryLimitations);
+                    Helper.addConditions(queryConditions);
         }
         return null;
     }

@@ -2,20 +2,19 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-public class InstitutionVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitInstitution(SchenqlParser.InstitutionContext ctx) {
+class InstitutionVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitInstitution(SchenqlParser.InstitutionContext ctx, Query sqlQuery) {
         if (ctx.institutionQuery() != null) {
-            InstitutionQueryVisitor jqv = new InstitutionQueryVisitor();
-            return jqv.visitInstitutionQuery(ctx.institutionQuery());
+            InstitutionQueryVisitor iqv = new InstitutionQueryVisitor();
+            iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery, null);
         } else {
-            return "SELECT `institution`.`key` FROM `institution`" +
+            "SELECT `institution`.`key` FROM `institution`" +
                     "JOIN `institution_name`" +
                     "ON `institution_name`.`.institutionKey` = `institution`.`key`" +
-                    "WHERE `institution_name`.`name` " +
-                    Helper.sqlStringComparison(ctx.STRING().getText());
+                    "WHERE `institution_name`.`name` ";
+                    //Helper.sqlStringComparison(ctx.STRING().getText());
         }
     }
 }

@@ -9,7 +9,7 @@ public class PersonVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitPerson(SchenqlParser.PersonContext ctx) {
         if (ctx.personQuery() != null) {
             PersonQueryVisitor pqv = new PersonQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationConditionContext) {
                 return pqv.visitPersonQuery(ctx.personQuery(), new String[]{"`person`.`dblpKey`"});
             }
             return pqv.visitPersonQuery(ctx.personQuery());

@@ -1,6 +1,6 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
-class Select {
+public class Select {
     private Table tableName;
     private Field fieldName;
     private String alias;

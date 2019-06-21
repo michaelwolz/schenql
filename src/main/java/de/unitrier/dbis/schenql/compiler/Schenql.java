@@ -61,7 +61,7 @@ public class Schenql {
                         RootVisitor visitor = new RootVisitor();
 
                         // Generate SQL
-                        generatedSQL = visitor.visit(rootContext);
+                        generatedSQL = visitor.visit(rootContext).buildQuery();
 
                         if (errorListener.getSyntaxErrors().size() == 0) {
                             if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);

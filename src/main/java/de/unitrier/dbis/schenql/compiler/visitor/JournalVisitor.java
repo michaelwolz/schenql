@@ -8,7 +8,7 @@ public class JournalVisitor extends SchenqlParserBaseVisitor<String> {
     public String visitJournal(SchenqlParser.JournalContext ctx) {
         if (ctx.journalQuery() != null) {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonLimitationContext) {
+            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonConditionContext) {
                 return jqv.visitJournalQuery(ctx.journalQuery(), new String[]{"`journal`.`dblpKey`"});
             }
             return jqv.visitJournalQuery(ctx.journalQuery());

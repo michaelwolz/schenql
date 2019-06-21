@@ -4,12 +4,12 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.Helper;
 import de.unitrier.dbis.schenql.compiler.Join;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.schenql.compiler.QueryCondition;
 
-public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimitation> {
+public class JournalConditionVisitor extends SchenqlParserBaseVisitor<QueryCondition> {
     @Override
-    public QueryLimitation visitJournalLimitation(SchenqlParser.JournalLimitationContext ctx) {
-        QueryLimitation ql = new QueryLimitation();
+    public QueryCondition visitJournalCondition(SchenqlParser.JournalConditionContext ctx) {
+        QueryCondition ql = new QueryCondition();
 
         if (ctx.NAMED() != null) {
             ql.setJoins(new Join[]{
@@ -19,13 +19,13 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
                             "`journal`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`journal`.`name` " + Helper.sqlStringComparison(ctx.STRING().getText()));
+            ql.setCondition("`journal`.`name` " + Helper.sqlStringComparison(ctx.STRING().getText()));
             return ql;
         }
 
         if (ctx.ACRONYM() != null) {
             // Exact match for acronyms
-            ql.setLimitation("`journal`.`acronym` = \"" + ctx.STRING().getText() + "\"");
+            ql.setCondition("`journal`.`acronym` = \"" + ctx.STRING().getText() + "\"");
             return ql;
         }
 
@@ -41,7 +41,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
             });
 
             KeywordVisitor kv = new KeywordVisitor();
-            ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+            ql.setCondition("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
             return ql;
         }
 
@@ -52,7 +52,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
                             "`journal`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`publication`.`year` > " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` > " + ctx.YEAR().getText());
             return ql;
         }
 
@@ -63,7 +63,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
                             "`journal`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`publication`.`year` < " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` < " + ctx.YEAR().getText());
             return ql;
         }
 
@@ -74,7 +74,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
                             "`journal`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`publication`.`year` = " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` = " + ctx.YEAR().getText());
             return ql;
         }
 
@@ -85,7 +85,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
                             "`journal`.`dblpKey`"
                     )
             });
-            ql.setLimitation("`publication`.`volume` = " + ctx.STRING().getText());
+            ql.setCondition("`publication`.`volume` = " + ctx.STRING().getText());
             return ql;
         }
 
@@ -98,7 +98,7 @@ public class JournalLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimi
             });
 
             PublicationVisitor pv = new PublicationVisitor();
-            ql.setLimitation("`journal`.`dblpKey` IN ( " + pv.visitPublication(ctx.publication()) + ")");
+            ql.setCondition("`journal`.`dblpKey` IN ( " + pv.visitPublication(ctx.publication()) + ")");
             return ql;
         }
 

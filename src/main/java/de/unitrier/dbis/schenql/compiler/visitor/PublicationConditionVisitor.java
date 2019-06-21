@@ -2,16 +2,15 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
 import de.unitrier.dbis.schenql.compiler.Join;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.schenql.compiler.QueryCondition;
 
 import java.util.ArrayList;
 
-public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<QueryLimitation> {
+public class PublicationConditionVisitor extends SchenqlParserBaseVisitor<QueryCondition> {
     @Override
-    public QueryLimitation visitPublicationLimitation(SchenqlParser.PublicationLimitationContext ctx) {
-        QueryLimitation ql = new QueryLimitation();
+    public QueryCondition visitPublicationCondition(SchenqlParser.PublicationConditionContext ctx) {
+        QueryCondition ql = new QueryCondition();
 
         if (ctx.WRITTEN_BY() != null) {
             ql.setJoins(new Join[]{
@@ -27,7 +26,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     )
             });
             PersonVisitor pv = new PersonVisitor();
-            ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
+            ql.setCondition("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
             return ql;
         }
 
@@ -46,7 +45,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     )
             });
             PersonVisitor pv = new PersonVisitor();
-            ql.setLimitation("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
+            ql.setCondition("`person`.`dblpKey` IN (" + pv.visitPerson(ctx.person()) + ")");
             return ql;
         }
 
@@ -71,7 +70,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
             });
 
             InstitutionVisitor iv = new InstitutionVisitor();
-            ql.setLimitation("`person_works_for_institution`.`institutionKey` IN " +
+            ql.setCondition("`person_works_for_institution`.`institutionKey` IN " +
                     iv.visitInstitution(ctx.institution()));
             return ql;
         }
@@ -86,9 +85,9 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                 });
 
                 KeywordVisitor kv = new KeywordVisitor();
-                ql.setLimitation("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
+                ql.setCondition("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
             } else {
-                ql.setLimitation("MATCH (`publication`.`abstract`) " +
+                ql.setCondition("MATCH (`publication`.`abstract`) " +
                         "AGAINST(\"" + ctx.STRING().getText() +
                         "\" IN NATURAL LANGUAGE MODE)");
             }
@@ -97,17 +96,17 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
 
         // TODO: Full-Text-Search for abstracts with ON keyword (needs to be added to the grammar too)
         if (ctx.BEFORE() != null) {
-            ql.setLimitation("`publication`.`year` < " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` < " + ctx.YEAR().getText());
             return ql;
         }
 
         if (ctx.AFTER() != null) {
-            ql.setLimitation("`publication`.`year` > " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` > " + ctx.YEAR().getText());
             return ql;
         }
 
         if (ctx.IN_YEAR() != null) {
-            ql.setLimitation("`publication`.`year` = " + ctx.YEAR().getText());
+            ql.setCondition("`publication`.`year` = " + ctx.YEAR().getText());
             return ql;
         }
 
@@ -121,12 +120,12 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                 });
 
                 JournalVisitor jv = new JournalVisitor();
-                ql.setLimitation("`journal_name`.`journal_dblpKey` IN (" + jv.visitJournal(ctx.journal()) + ")");
+                ql.setCondition("`journal_name`.`journal_dblpKey` IN (" + jv.visitJournal(ctx.journal()) + ")");
             } else if (ctx.conference() != null) {
                 ConferenceVisitor jv = new ConferenceVisitor();
-                ql.setLimitation("`publication`.`conference_dblpKey` IN (" + jv.visitConference(ctx.conference()) + ")");
+                ql.setCondition("`publication`.`conference_dblpKey` IN (" + jv.visitConference(ctx.conference()) + ")");
             } else if (ctx.DBLP_KEY() != null) {
-                ql.setLimitation("`publication`.`conference_dblpKey` = " + ctx.DBLP_KEY().getText() +
+                ql.setCondition("`publication`.`conference_dblpKey` = " + ctx.DBLP_KEY().getText() +
                         " OR `publication`.`journal_dblpKey` = " + ctx.DBLP_KEY().getText());
             } else if (ctx.STRING() != null) {
                 ql.setJoins(new Join[]{
@@ -139,7 +138,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                                 "`publication`.`dblpKey`")
                 });
 
-                ql.setLimitation("`journal`.`acronym` = " + ctx.STRING().getText() +
+                ql.setCondition("`journal`.`acronym` = " + ctx.STRING().getText() +
                         " OR `conference`.`acronym` = " + ctx.STRING().getText());
             }
             return ql;
@@ -158,7 +157,7 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     add("`publication`.`dblpKey`");
                 }
             });
-            ql.setLimitation("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            ql.setCondition("`publication_references`.`pub_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
             return ql;
         }
 
@@ -175,15 +174,15 @@ public class PublicationLimitationVisitor extends SchenqlParserBaseVisitor<Query
                     add("`publication`.`dblpKey`");
                 }
             });
-            ql.setLimitation("`publication_references`.`pub2_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
+            ql.setCondition("`publication_references`.`pub2_id` IN (" + pv.visitPublication(ctx.publication()) + ")");
             return ql;
         }
 
         if (ctx.TITLE() != null) {
             if (ctx.TILDE() != null) {
-                ql.setLimitation("MATCH (`publication`.`title`) AGAINST('" + ctx.STRING().getText() + "')");
+                ql.setCondition("MATCH (`publication`.`title`) AGAINST('" + ctx.STRING().getText() + "')");
             } else {
-                ql.setLimitation("`publication`.`title` = '" + ctx.STRING().getText() + "'");
+                ql.setCondition("`publication`.`title` = '" + ctx.STRING().getText() + "'");
             }
             return ql;
         }

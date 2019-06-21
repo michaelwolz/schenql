@@ -2,36 +2,23 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.DefaultFields;
-import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryLimitation;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.Select;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Arrays;
 
-import static java.util.stream.Collectors.toList;
-
-public class ConferenceQueryVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitConferenceQuery(SchenqlParser.ConferenceQueryContext ctx) {
-        return visitConferenceQuery(ctx, DefaultFields.conference);
-    }
-
-    public String visitConferenceQuery(SchenqlParser.ConferenceQueryContext ctx, String[] selectFields) {
+class ConferenceQueryVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitConferenceQuery(SchenqlParser.ConferenceQueryContext ctx, Query sqlQuery, Select[] selectFields) {
         if (ctx.CONFERENCE() != null) {
-            ConferenceLimitationVisitor plv = new ConferenceLimitationVisitor();
+            Arrays.stream(selectFields).forEach(sqlQuery::addSelect);
+            sqlQuery.distinct();
+            sqlQuery.addFrom("conference");
 
-            // Getting limitations from child nodes
-            List<QueryLimitation> queryLimitations = ctx.conferenceLimitation()
-                    .stream()
-                    .map(ql -> ql.accept(plv))
-                    .filter(Objects::nonNull)
-                    .collect(toList());
-
-            // Build select statement
-            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `conference`" +
-                    Helper.addLimitations(queryLimitations);
+            ConferenceConditionVisitor plv = new ConferenceConditionVisitor();
+            ctx.conferenceCondition()
+                    .forEach(conditionCtx -> {
+                        plv.visitConferenceCondition(conditionCtx, sqlQuery);
+                    });
         }
-        return null;
     }
 }

@@ -1,6 +1,5 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
-import de.unitrier.dbis.schenql.sqlquerybuilder.condition.*;
 import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
 import de.unitrier.dbis.sqlquerybuilder.condition.ConditionGroup;
 
@@ -9,6 +8,7 @@ import java.util.StringJoiner;
 
 public class Query {
     private ArrayList<Select> select = new ArrayList<>();
+    private boolean distinct = false;
     private ArrayList<From> from = new ArrayList<>();
     private ArrayList<Join> joins = new ArrayList<>();
     private ArrayList<Condition> conditions = new ArrayList<>();
@@ -23,6 +23,14 @@ public class Query {
 
     public void addSelect(String tableName, String selectField) {
         select.add(new Select(tableName, selectField));
+    }
+
+    public void addSelect(Select selectField) {
+        select.add(selectField);
+    }
+
+    public void distinct() {
+        this.distinct = true;
     }
 
     public void addFrom(String fromTable) {
@@ -111,6 +119,7 @@ public class Query {
 
         // SELECT
         query.add("SELECT");
+        if (distinct) query.add("DISTINCT");
         if (select.size() > 0) {
             query.add(createSelectFields());
         } else {
