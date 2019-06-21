@@ -8,7 +8,7 @@ import de.unitrier.dbis.sqlquerybuilder.Select;
 import java.util.Arrays;
 
 class ConferenceQueryVisitor extends SchenqlParserBaseVisitor<Void> {
-    void visitConferenceQuery(SchenqlParser.ConferenceQueryContext ctx, Query sqlQuery, Select[] selectFields) {
+    void visitConferenceQuery(SchenqlParser.ConferenceQueryContext ctx, Query sqlQuery) {
         if (ctx.CONFERENCE() != null) {
             Arrays.stream(selectFields).forEach(sqlQuery::addSelect);
             sqlQuery.distinct();

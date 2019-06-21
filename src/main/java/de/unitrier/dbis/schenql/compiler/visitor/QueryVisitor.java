@@ -6,14 +6,10 @@ import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.Select;
 
 class QueryVisitor extends SchenqlParserBaseVisitor<Void> {
-    void visitQuery(SchenqlParser.QueryContext ctx, Query sqlQuery, Select[] selectFields) {
+    void visitQuery(SchenqlParser.QueryContext ctx, Query sqlQuery) {
         if (ctx.conferenceQuery() != null) {
             ConferenceQueryVisitor cqv = new ConferenceQueryVisitor();
-            if (selectFields != null) {
-                cqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, selectFields);
-            } else {
-                cqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, null);
-            }
+            cqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery);
         }
 
         if (ctx.institutionQuery() != null) {
