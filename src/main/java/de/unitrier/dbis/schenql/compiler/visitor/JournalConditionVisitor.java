@@ -2,106 +2,163 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.Join;
-import de.unitrier.dbis.schenql.compiler.QueryCondition;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
+import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
 
-public class JournalConditionVisitor extends SchenqlParserBaseVisitor<QueryCondition> {
-    @Override
-    public QueryCondition visitJournalCondition(SchenqlParser.JournalConditionContext ctx) {
-        QueryCondition ql = new QueryCondition();
-
+class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitJournalCondition(SchenqlParser.JournalConditionContext ctx, Query sqlQuery) {
         if (ctx.NAMED() != null) {
-            ql.setJoins(new Join[]{
-                    new Join(
-                            "`journal_name`",
-                            "`journalKey`",
-                            "`journal`.`dblpKey`"
+            sqlQuery.addJoin(
+                    "journal_name",
+                    "journalKey",
+                    "journal",
+                    "dblpKey"
+            );
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "journal",
+                            "name",
+                            BooleanOperator.EQUALS,
+                            ctx.STRING().getText()
                     )
-            });
-            ql.setCondition("`journal`.`name` " + Helper.sqlStringComparison(ctx.STRING().getText()));
-            return ql;
+            );
         }
 
         if (ctx.ACRONYM() != null) {
-            // Exact match for acronyms
-            ql.setCondition("`journal`.`acronym` = \"" + ctx.STRING().getText() + "\"");
-            return ql;
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "journal",
+                            "acronym",
+                            BooleanOperator.EQUALS,
+                            ctx.STRING().getText()
+                    )
+            );
         }
 
         if (ctx.ABOUT() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"),
-                    new Join("`publication_has_keyword`",
-                            "`dblpKey`",
-                            "`publication`.`dblpKey`"
-                    )
-            });
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
+            sqlQuery.addJoin(
+                    "publication_has_keyword",
+                    "dblpKey",
+                    "publication",
+                    "dblpKey"
+            );
 
+            Query subQuery = new Query();
+            subQuery.distinct();
+            subQuery.addSelect("keyword", "keyword");
             KeywordVisitor kv = new KeywordVisitor();
-            ql.setCondition("`publication_has_keyword`.`keyword` IN (" + kv.visitKeyword(ctx.keyword()) + ")");
-            return ql;
+            kv.visitKeyword(ctx.keyword(), subQuery);
+
+            sqlQuery.addCondition(
+                    new SubQueryCondition(
+                            "publication_has_keyword",
+                            "keyword",
+                            subQuery
+                    )
+            );
         }
 
         if (ctx.AFTER() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
+
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "publication",
+                            "year",
+                            BooleanOperator.GT,
+                            Integer.parseInt(ctx.YEAR().getText())
                     )
-            });
-            ql.setCondition("`publication`.`year` > " + ctx.YEAR().getText());
-            return ql;
+            );
         }
 
         if (ctx.BEFORE() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
+
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "publication",
+                            "year",
+                            BooleanOperator.LT,
+                            Integer.parseInt(ctx.YEAR().getText())
                     )
-            });
-            ql.setCondition("`publication`.`year` < " + ctx.YEAR().getText());
-            return ql;
+            );
         }
 
         if (ctx.IN_YEAR() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
+
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "publication",
+                            "year",
+                            BooleanOperator.EQUALS,
+                            Integer.parseInt(ctx.YEAR().getText())
                     )
-            });
-            ql.setCondition("`publication`.`year` = " + ctx.YEAR().getText());
-            return ql;
+            );
         }
 
         if (ctx.VOLUME() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
+
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "publication",
+                            "volume",
+                            BooleanOperator.EQUALS,
+                            ctx.STRING().getText()
                     )
-            });
-            ql.setCondition("`publication`.`volume` = " + ctx.STRING().getText());
-            return ql;
+            );
         }
 
         if (ctx.OF() != null) {
-            ql.setJoins(new Join[]{
-                    new Join("`publication`",
-                            "`journal_dblpKey`",
-                            "`journal`.`dblpKey`"
-                    )
-            });
+            sqlQuery.addJoin(
+                    "publication",
+                    "journal_dblpKey",
+                    "journal",
+                    "dblpKey"
+            );
 
+            Query subQuery = new Query();
+            subQuery.distinct();
+            subQuery.addSelect("publication", "journal_dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
-            ql.setCondition("`journal`.`dblpKey` IN ( " + pv.visitPublication(ctx.publication()) + ")");
-            return ql;
-        }
+            pv.visitPublication(ctx.publication(), subQuery);
 
-        return null;
+            sqlQuery.addCondition(
+                    new SubQueryCondition(
+                            "journal",
+                            "dblpKey",
+                            subQuery
+                    )
+            );
+        }
     }
 }

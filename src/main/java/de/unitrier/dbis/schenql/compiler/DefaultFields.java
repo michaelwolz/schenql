@@ -2,31 +2,29 @@ package de.unitrier.dbis.schenql.compiler;
 
 public class DefaultFields {
     public final static String[] conference = new String[]{
-            "`conference`.`acronym`",
-//            "`conference`.`corerank`"
+            "acronym"
     };
 
     public final static String[] institution = new String[]{
-            "`institution`.`primaryName`",
-            "`institution`.`location`"
+            "primaryName",
+            "location"
     };
 
     public final static String[] journal = new String[]{
-            "`journal`.`acronym`"
+            "acronym"
     };
 
     public final static String[] keyword = new String[]{
-            "`keyword`.`keyword`"
+            "keyword"
     };
 
     public final static String[] person = new String[]{
-            "`person`.`primaryName`",
-            "`person`.`orcid`",
-//            "`person`.`h-index`"
+            "primaryName",
+            "orcid",
     };
 
     public final static String[] publication = new String[]{
-            "`publication`.`title`",
-            "`publication`.`year`",
+            "title",
+            "year",
     };
 }

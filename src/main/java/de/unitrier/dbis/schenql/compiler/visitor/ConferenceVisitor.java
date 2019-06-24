@@ -2,21 +2,25 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
 import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
 
-public class ConferenceVisitor extends SchenqlParserBaseVisitor<Void> {
-    public void visitConference(SchenqlParser.ConferenceContext ctx, Query sqlQuery) {
+class ConferenceVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitConference(SchenqlParser.ConferenceContext ctx, Query sqlQuery) {
         if (ctx.conferenceQuery() != null) {
             ConferenceQueryVisitor jqv = new ConferenceQueryVisitor();
-            jqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery, null);
+            jqv.visitConferenceQuery(ctx.conferenceQuery(), sqlQuery);
         } else {
-            // defaultQuery(ctx.STRING().getText());
+            sqlQuery.addFrom("conference");
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "conference",
+                            "acronym",
+                            BooleanOperator.EQUALS,
+                            ctx.STRING().getText()
+                    )
+            );
         }
     }
-
-//    static String defaultQuery(String acronym)  {
-//        "SELECT `conference`.`dblpKey` FROM `conference` "
-//                + "WHERE `conference`.`acronym` = \"" + acronym + "\"";
-//    }
 }

@@ -1,87 +1,79 @@
-///*
-//package de.unitrier.dbis.schenql.compiler.visitor;
-//
-//import de.unitrier.dbis.schenql.SchenqlParser;
-//import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-//import de.unitrier.dbis.schenql.compiler.Join;
-//import de.unitrier.dbis.schenql.compiler.QueryCondition;
-//
-//import java.util.ArrayList;
-//
-//public class KeywordConditionVisitor extends SchenqlParserBaseVisitor<QueryCondition> {
-//    @Override
-//    public QueryCondition visitKeywordCondition(SchenqlParser.KeywordConditionContext ctx) {
-//        QueryCondition ql = new QueryCondition();
-//
-//        if (ctx.OF() != null) {
-//            ArrayList<Join> joins = new ArrayList<>();
-//            joins.add(
-//                    new Join("`publication_has_keyword`",
-//                            "`keyword`",
-//                            "`keyword`.`keyword`"
-//                    )
-//            );
-//            joins.add(
-//                    new Join("`publication`",
-//                            "`dblpKey`",
-//                            "`publication_has_keyword`.`dblpKey`"
-//                    )
-//            );
-//
-//            if (ctx.conference() != null) {
-//                ConferenceQueryVisitor cqv = new ConferenceQueryVisitor();
-//                ql.setCondition(
-//                        "`publication`.`conference_dblpKey` IN (" +
-//                                cqv.visitConferenceQuery(
-//                                        ctx.conference().conferenceQuery(),
-//                                        new String[]{"`conference`.`dblpKey`"}
-//                                ) + ")"
-//                );
-//            } else if (ctx.journal() != null) {
-//                JournalQueryVisitor cqv = new JournalQueryVisitor();
-//                ql.setCondition(
-//                        "`publication`.`journal_dblpKey` IN (" +
-//                                cqv.visitJournalQuery(
-//                                        ctx.journal().journalQuery(),
-//                                        new String[]{"`journal`.`dblpKey`"}
-//                                ) + ")"
-//                );
-//            } else if (ctx.person() != null) {
-//                joins.add(
-//                        new Join("`person_authored_publication`",
-//                                "`publicationKey`",
-//                                "`publication`.`dblpKey`"
-//                        )
-//                );
-//                joins.add(
-//                        new Join("`person`",
-//                                "`dblpKey`",
-//                                "`person_authored_publication`.`personKey`"
-//                        )
-//                );
-//                PersonQueryVisitor pqv = new PersonQueryVisitor();
-//                ql.setCondition(
-//                        "`person`.`dblpKey` IN (" +
-//                                pqv.visitPersonQuery(
-//                                        ctx.person().personQuery(),
-//                                        new String[]{"`person`.`dblpKey`"}
-//                                ) + ")"
-//                );
-//            } else if (ctx.publication() != null) {
-//                PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-//                ql.setCondition(
-//                        "`publication`.`dblpKey` IN (" +
-//                                pqv.visitPublicationQuery(
-//                                        ctx.publication().publicationQuery(),
-//                                        new String[]{"`publication`.`dblpKey`"}
-//                                ) + ")"
-//                );
-//            }
-//            ql.setJoins(joins.toArray(new Join[0]));
-//            return ql;
-//        }
-//
-//        return null;
-//    }
-//}
-//*/
+package de.unitrier.dbis.schenql.compiler.visitor;
+
+import de.unitrier.dbis.schenql.SchenqlParser;
+import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
+
+class KeywordConditionVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitKeywordCondition(SchenqlParser.KeywordConditionContext ctx, Query sqlQuery) {
+        if (ctx.OF() != null) {
+            sqlQuery.addJoin(
+                    "publication_has_keyword",
+                    "keyword",
+                    "keyword",
+                    "keyword"
+            );
+            sqlQuery.addJoin(
+                    "publication",
+                    "dblpKey",
+                    "publication_has_keyword",
+                    "dblpKey"
+
+            );
+
+            if (ctx.conference() != null) {
+                Query subQuery = new Query();
+                subQuery.distinct();
+                subQuery.addSelect("conference", "dblpKey");
+                ConferenceVisitor cv = new ConferenceVisitor();
+                cv.visitConference(ctx.conference(), subQuery);
+                sqlQuery.addCondition(
+                        new SubQueryCondition("publication", "conference_dblpKey", subQuery)
+                );
+            } else if (ctx.journal() != null) {
+                Query subQuery = new Query();
+                subQuery.distinct();
+                subQuery.addSelect("journal", "dblpKey");
+                JournalVisitor jv = new JournalVisitor();
+                jv.visitJournal(ctx.journal(), subQuery);
+                sqlQuery.addCondition(
+                        new SubQueryCondition("publication", "journal_dblpKey", subQuery)
+                );
+            } else if (ctx.person() != null) {
+                sqlQuery.addJoin(
+                        "person_authored_publication",
+                        "publicationKey",
+                        "publication",
+                        "dblpKey"
+                );
+
+                sqlQuery.addJoin(
+                        "person",
+                        "dblpKey",
+                        "person_authored_publication",
+                        "personKey"
+                );
+
+                Query subQuery = new Query();
+                subQuery.distinct();
+                subQuery.addSelect("person", "dblpKey");
+                PersonVisitor pv = new PersonVisitor();
+                pv.visitPerson(ctx.person(), subQuery);
+
+                sqlQuery.addCondition(
+                        new SubQueryCondition("person", "dblpKey", subQuery)
+                );
+            } else if (ctx.publication() != null) {
+                Query subQuery = new Query();
+                subQuery.distinct();
+                subQuery.addSelect("publication", "dblpKey");
+                PublicationVisitor pv = new PublicationVisitor();
+                pv.visitPublication(ctx.publication(), subQuery);
+                sqlQuery.addCondition(
+                        new SubQueryCondition("publication", "dblpKey", subQuery)
+                );
+            }
+        }
+    }
+}

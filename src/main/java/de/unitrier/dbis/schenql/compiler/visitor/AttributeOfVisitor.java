@@ -8,6 +8,6 @@ class AttributeOfVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitAttributeOf(SchenqlParser.AttributeOfContext ctx, Query sqlQuery) {
         QueryVisitor qv = new QueryVisitor();
         sqlQuery.addSelect(ctx.STRING().getText());
-        qv.visitQuery(ctx.query(), sqlQuery, null);
+        qv.visitQuery(ctx.query(), sqlQuery);
     }
 }

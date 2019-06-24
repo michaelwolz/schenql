@@ -2,32 +2,53 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
-import de.unitrier.dbis.schenql.compiler.Helper;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 
-public class PersonVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitPerson(SchenqlParser.PersonContext ctx) {
+import static de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator.EQUALS;
+import static de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator.SOUNDSLIKE;
+
+class PersonVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitPerson(SchenqlParser.PersonContext ctx, Query sqlQuery) {
         if (ctx.personQuery() != null) {
             PersonQueryVisitor pqv = new PersonQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PublicationConditionContext) {
-                return pqv.visitPersonQuery(ctx.personQuery(), new String[]{"`person`.`dblpKey`"});
-            }
-            return pqv.visitPersonQuery(ctx.personQuery());
+            pqv.visitPersonQuery(ctx.personQuery(), sqlQuery);
         } else if (ctx.DBLP_KEY() != null) {
-            return ctx.DBLP_KEY().getText();
+            sqlQuery.distinct();
+            sqlQuery.addFrom("person");
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "person",
+                            "dblpKey",
+                            EQUALS,
+                            ctx.DBLP_KEY().getText()
+                    )
+            );
         } else if (ctx.ORCID_VALUE() != null) {
-            return "SELECT DISTINCT `person`.`dblpKey` FROM `person` " +
-                    "WHERE `person`.`orcid` = \"" + ctx.ORCID_VALUE().getText() + "\"";
+            sqlQuery.distinct();
+            sqlQuery.addSelect("person", "dblpKey");
+            sqlQuery.addFrom("person");
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "person",
+                            "orcid",
+                            EQUALS,
+                            ctx.ORCID_VALUE().getText()
+                    )
+            );
         } else {
-            String stmnt = "SELECT DISTINCT `person`.`dblpKey` FROM `person` "
-                    + "JOIN `person_names` " +
-                    "ON `person_names`.`personKey` = `person`.`dblpKey` ";
+            sqlQuery.distinct();
+            sqlQuery.addSelect("person", "dblpKey");
+            sqlQuery.addFrom("person");
+
+            BooleanCondition cond = new BooleanCondition("person", "orcid");
+            cond.setConditionValue(ctx.STRING().getText());
             if (ctx.TILDE() != null) {
-                stmnt += "WHERE `person_names`.`name` SOUNDS LIKE '" + ctx.STRING().getText() + "'";
+                cond.setOperator(SOUNDSLIKE);
             } else {
-                stmnt += "WHERE `person_names`.`name` = '" + ctx.STRING().getText() + "'";
+                cond.setOperator(EQUALS);
             }
-            return stmnt;
+            sqlQuery.addCondition(cond);
         }
     }
 }

@@ -3,66 +3,77 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
-import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryCondition;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Arrays;
 
-import static java.util.stream.Collectors.toList;
-
-public class PublicationQueryVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx) {
-        return visitPublicationQuery(ctx, DefaultFields.publication);
-    }
-
-    String visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, String[] selectFields) {
+class PublicationQueryVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitPublicationQuery(SchenqlParser.PublicationQueryContext ctx, Query sqlQuery) {
         if (ctx.PUBLICATION() != null) {
-            PublicationConditionVisitor plv = new PublicationConditionVisitor();
+            if (sqlQuery.selectIsEmpty()) {
+                Arrays.stream(DefaultFields.publication).forEach(selectField -> {
+                    sqlQuery.addSelect("publication", selectField);
+                });
+            }
 
-            // Getting conditions from child nodes
-            List<QueryCondition> queryConditions = ctx.publicationCondition()
-                    .stream()
-                    .map(ql -> ql.accept(plv))
-                    .filter(Objects::nonNull)
-                    .collect(toList());
+            sqlQuery.distinct();
+            sqlQuery.addFrom("publication");
 
-            // Add specialization
-            QueryCondition ql = new QueryCondition();
             switch (ctx.PUBLICATION().getText().substring(0, 4).toUpperCase()) {
                 case "BOOK":
-                    ql.setCondition("`publication`.`type` = \"book\"");
-                    queryConditions.add(ql);
+                    sqlQuery.addCondition(
+                            new BooleanCondition("publication",
+                                    "type",
+                                    BooleanOperator.EQUALS,
+                                    "book")
+                    );
                     break;
                 case "ARTI":
-                    ql.setCondition("`publication`.`type` = \"article\"");
-                    queryConditions.add(ql);
+                    sqlQuery.addCondition(
+                            new BooleanCondition("publication",
+                                    "type",
+                                    BooleanOperator.EQUALS,
+                                    "article")
+                    );
                     break;
                 case "PHDT":
-                    ql.setCondition("`publication`.`type` = \"phdthesis\"");
-                    queryConditions.add(ql);
+                    sqlQuery.addCondition(
+                            new BooleanCondition("publication",
+                                    "type",
+                                    BooleanOperator.EQUALS,
+                                    "phdthesis")
+                    );
                     break;
                 case "MAST":
-                    ql.setCondition("`publication`.`type` = \"masterthesis\"");
-                    queryConditions.add(ql);
+                    sqlQuery.addCondition(
+                            new BooleanCondition("publication",
+                                    "type",
+                                    BooleanOperator.EQUALS,
+                                    "masterthesis")
+                    );
                     break;
                 case "INPR":
-                    ql.setCondition("`publication`.`type` = \"inproceedings\"");
-                    queryConditions.add(ql);
+                    sqlQuery.addCondition(
+                            new BooleanCondition("publication",
+                                    "type",
+                                    BooleanOperator.EQUALS,
+                                    "inproceedings")
+                    );
                     break;
             }
 
-            // Build select statement
-            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `publication`" +
-                    Helper.addConditions(queryConditions);
+            PublicationConditionVisitor pcv = new PublicationConditionVisitor();
+            ctx.publicationCondition()
+                    .forEach(conditionCtx -> {
+                        pcv.visitPublicationCondition(conditionCtx, sqlQuery);
+                    });
         }
 
         if (ctx.publicationFunction() != null) {
             PublicationFunctionVisitor pfv = new PublicationFunctionVisitor();
-            return pfv.visitPublicationFunction(ctx.publicationFunction());
+            pfv.visitPublicationFunction(ctx.publicationFunction());
         }
-
-        return null;
     }
 }

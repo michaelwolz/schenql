@@ -3,35 +3,27 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
-import de.unitrier.dbis.schenql.compiler.Helper;
-import de.unitrier.dbis.schenql.compiler.QueryCondition;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Arrays;
 
-import static java.util.stream.Collectors.toList;
-
-public class JournalQueryVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitJournalQuery(SchenqlParser.JournalQueryContext ctx) {
-        return visitJournalQuery(ctx, DefaultFields.journal);
-    }
-
-    public String visitJournalQuery(SchenqlParser.JournalQueryContext ctx, String[] selectFields) {
+class JournalQueryVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitJournalQuery(SchenqlParser.JournalQueryContext ctx, Query sqlQuery) {
         if (ctx.JOURNAL() != null) {
-            JournalConditionVisitor plv = new JournalConditionVisitor();
+            if (sqlQuery.selectIsEmpty()) {
+                Arrays.stream(DefaultFields.journal).forEach(selectField -> {
+                    sqlQuery.addSelect("journal", selectField);
+                });
+            }
 
-            // Getting conditions from child nodes
-            List<QueryCondition> queryConditions = ctx.journalCondition()
-                    .stream()
-                    .map(ql -> ql.accept(plv))
-                    .filter(Objects::nonNull)
-                    .collect(toList());
+            sqlQuery.distinct();
+            sqlQuery.addFrom("journal");
 
-            // Build select statement
-            return "SELECT DISTINCT " + String.join(", ", selectFields) + " FROM `journal`" +
-                    Helper.addConditions(queryConditions);
+            JournalConditionVisitor jcv = new JournalConditionVisitor();
+            ctx.journalCondition()
+                    .forEach(conditionCtx -> {
+                        jcv.visitJournalCondition(conditionCtx, sqlQuery);
+                    });
         }
-        return null;
     }
 }

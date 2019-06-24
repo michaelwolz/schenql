@@ -6,6 +6,14 @@ public class BooleanCondition extends Condition {
     private BooleanOperator operator;
     private ConditionValue conditionValue;
 
+    public BooleanCondition(String fieldName) {
+        super(fieldName);
+    }
+
+    public BooleanCondition(String tableName, String fieldName) {
+        super(tableName, fieldName);
+    }
+
     public BooleanCondition(String fieldName, BooleanOperator operator, String conditionValue) {
         super(fieldName);
         this.operator = operator;
@@ -32,6 +40,18 @@ public class BooleanCondition extends Condition {
         this.conditionValue = new NumericConditionValue(conditionValue);
     }
 
+    public void setOperator(BooleanOperator operator) {
+        this.operator = operator;
+    }
+
+    public void setConditionValue(String condValue) {
+        this.conditionValue = new StringConditionValue(condValue);
+    }
+
+    public void setConditionValue(int condValue) {
+        this.conditionValue = new NumericConditionValue(condValue);
+    }
+
     @Override
     public String createStatement() {
         StringJoiner stmnt = new StringJoiner(" ");
@@ -51,6 +71,12 @@ public class BooleanCondition extends Condition {
                 break;
             case EQUALS:
                 stmnt.add("=");
+                break;
+            case LIKE:
+                stmnt.add("LIKE");
+                break;
+            case SOUNDSLIKE:
+                stmnt.add("SOUNDS LIKE");
                 break;
         }
         stmnt.add(conditionValue.getConditionValue());

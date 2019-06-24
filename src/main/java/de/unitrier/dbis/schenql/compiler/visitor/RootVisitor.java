@@ -12,7 +12,7 @@ public class RootVisitor extends SchenqlParserBaseVisitor<Query> {
 
         if (ctx.query() != null) {
             QueryVisitor qv = new QueryVisitor();
-            qv.visitQuery(ctx.query(), sqlQuery, null);
+            qv.visitQuery(ctx.query(), sqlQuery);
 
             // Limit output
             if (ctx.query().LIMIT() != null)

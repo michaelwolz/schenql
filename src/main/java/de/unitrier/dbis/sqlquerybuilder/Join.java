@@ -1,6 +1,6 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
-public class Join {
+public class Join extends AbstractJoin {
     private Table joinTable;
     private Field joinField;
     private Table onTable;
@@ -13,6 +13,7 @@ public class Join {
         this.onField = new Field(onField);
     }
 
+    @Override
     public String createStatement() {
         return joinTable.getQueryString() +
                 " ON " +

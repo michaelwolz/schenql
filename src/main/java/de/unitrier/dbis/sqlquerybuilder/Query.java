@@ -10,7 +10,7 @@ public class Query {
     private ArrayList<Select> select = new ArrayList<>();
     private boolean distinct = false;
     private ArrayList<From> from = new ArrayList<>();
-    private ArrayList<Join> joins = new ArrayList<>();
+    private ArrayList<AbstractJoin> joins = new ArrayList<>();
     private ArrayList<Condition> conditions = new ArrayList<>();
     private ArrayList<GroupBy> groupBy = new ArrayList<>();
     private ArrayList<OrderBy> orderBy = new ArrayList<>();
@@ -41,6 +41,10 @@ public class Query {
         from.add(new From(subQuery, alias));
     }
 
+    public void addJoin(SubQueryJoin subQueryJoin) {
+        joins.add(subQueryJoin);
+    }
+
     public void addJoin(String joinTable, String joinField, String onTable, String onField) {
         joins.add(new Join(joinTable, joinField, onTable, onField));
     }
@@ -69,6 +73,10 @@ public class Query {
         this.limit = limit;
     }
 
+    public boolean selectIsEmpty() {
+        return select.size() == 0;
+    }
+
     private String createSelectFields() {
         StringJoiner selectString = new StringJoiner(", ");
         for (Select selectField : select) {
@@ -87,7 +95,7 @@ public class Query {
 
     private String createJoins() {
         StringJoiner joinString = new StringJoiner(" ");
-        for (Join join : joins) {
+        for (AbstractJoin join : joins) {
             joinString.add("JOIN");
             joinString.add(join.createStatement());
         }

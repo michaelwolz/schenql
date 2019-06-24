@@ -18,6 +18,7 @@ query
     : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery | keywordQuery)
     logicalOperator?
     (LIMIT NUMBER)?
+    SEMI?
     ;
 
 // Logical Operators

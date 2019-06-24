@@ -3,7 +3,6 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
-import de.unitrier.dbis.sqlquerybuilder.Select;
 
 class QueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitQuery(SchenqlParser.QueryContext ctx, Query sqlQuery) {
@@ -14,47 +13,27 @@ class QueryVisitor extends SchenqlParserBaseVisitor<Void> {
 
         if (ctx.institutionQuery() != null) {
             InstitutionQueryVisitor iqv = new InstitutionQueryVisitor();
-            if (selectFields != null) {
-                iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery, selectFields);
-            } else {
-                iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery, null);
-            }
+            iqv.visitInstitutionQuery(ctx.institutionQuery(), sqlQuery);
         }
 
         if (ctx.journalQuery() != null) {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
-            if (selectFields != null) {
-                jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery, selectFields);
-            } else {
-                jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery, null);
-            }
+            jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery);
         }
 
         if (ctx.keywordQuery() != null) {
             KeywordQueryVisitor kqv = new KeywordQueryVisitor();
-            if (selectFields != null) {
-                kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery, selectFields);
-            } else {
-                kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery, null);
-            }
+            kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery);
         }
 
         if (ctx.personQuery() != null) {
             PersonQueryVisitor pqv = new PersonQueryVisitor();
-            if (selectFields != null) {
-                pqv.visitPersonQuery(ctx.personQuery(), sqlQuery, selectFields);
-            } else {
-                pqv.visitPersonQuery(ctx.personQuery(), sqlQuery, null);
-            }
+            pqv.visitPersonQuery(ctx.personQuery(), sqlQuery);
         }
 
         if (ctx.publicationQuery() != null) {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-            if (selectFields != null) {
-                pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery, selectFields);
-            } else {
-                pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery, null);
-            }
+            pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery);
         }
     }
 }

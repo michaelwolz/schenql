@@ -2,23 +2,25 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
+import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
 
-public class JournalVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitJournal(SchenqlParser.JournalContext ctx) {
+class JournalVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitJournal(SchenqlParser.JournalContext ctx, Query sqlQuery) {
         if (ctx.journalQuery() != null) {
             JournalQueryVisitor jqv = new JournalQueryVisitor();
-            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.PersonConditionContext) {
-                return jqv.visitJournalQuery(ctx.journalQuery(), new String[]{"`journal`.`dblpKey`"});
-            }
-            return jqv.visitJournalQuery(ctx.journalQuery());
+            jqv.visitJournalQuery(ctx.journalQuery(), sqlQuery);
         } else {
-            return defaultQuery(ctx.STRING().getText());
+            sqlQuery.addFrom("journal");
+            sqlQuery.addCondition(
+                    new BooleanCondition(
+                            "journal",
+                            "acronym",
+                            BooleanOperator.EQUALS,
+                            ctx.STRING().getText()
+                    )
+            );
         }
-    }
-
-    static String defaultQuery(String acronym) {
-        return "SELECT `journal`.`dblpKey` FROM `journal` " +
-                "WHERE `journal`.`acronym` = \"" + acronym + "\"";
     }
 }
