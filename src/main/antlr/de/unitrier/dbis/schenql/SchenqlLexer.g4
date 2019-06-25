@@ -61,7 +61,7 @@ PUBLISHED_IN:           P U B L I S H E D ' ' I N;
 PUBLISHED_WITH:         P U B L I S H E D ' ' W I T H;
 TITLE:                  T I T L E | T I T L E D;
 VOLUME:                 V O L U M E;
-WORKS_FOR:              W O R K S ' ' F O R;
+WORKS_FOR:              (W O R K S | W O R K I N G) ' ' F O R;
 WRITTEN_BY:             W R I T T E N ' ' B Y;
 
 // Functions

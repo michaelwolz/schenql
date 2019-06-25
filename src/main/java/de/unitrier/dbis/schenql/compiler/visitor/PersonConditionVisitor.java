@@ -100,6 +100,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             );
         }
 
+        // Not possible with current dataset
         if (ctx.PUBLISHED_WITH() != null) {
             // Currently same as WORKS FOR
             sqlQuery.addJoin(
@@ -251,8 +252,6 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addGroupBy("person", "dblpKey");
-
             sqlQuery.addCondition(
                     new SubQueryCondition(
                             "publication_references",
@@ -281,8 +280,6 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-
-            sqlQuery.addGroupBy("person", "dblpKey");
 
             sqlQuery.addCondition(
                     new SubQueryCondition(
