@@ -11,6 +11,7 @@ class KeywordVisitor extends SchenqlParserBaseVisitor<Void> {
             KeywordQueryVisitor kqv = new KeywordQueryVisitor();
             kqv.visitKeywordQuery(ctx.keywordQuery(), sqlQuery);
         } else {
+            sqlQuery.addFrom("keyword");
             InCondition keywords = new InCondition("keyword", "keyword");
             ctx.STRING().forEach(keyword -> keywords.addValue(keyword.getText()));
             sqlQuery.addCondition(keywords);

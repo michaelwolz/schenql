@@ -43,37 +43,16 @@ public class Schenql {
 
                 if (!query.equals("exit;")) {
                     try {
-                        CharStream charStream = CharStreams.fromString(query);
-
-                        // Initializing the lexer
-                        SchenqlLexer lexer = new SchenqlLexer(charStream);
-                        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-
-                        // Initializing the parser
-                        SchenqlParser parser = new SchenqlParser(commonTokenStream);
-
-                        // Adding error handling
-                        SyntaxErrorListener errorListener = new SyntaxErrorListener();
-                        parser.addErrorListener(errorListener);
-
-                        // Getting the rootContext
-                        SchenqlParser.RootContext rootContext = parser.root();
-                        RootVisitor visitor = new RootVisitor();
-
                         // Generate SQL
-                        generatedSQL = visitor.visit(rootContext).buildQuery();
-
-                        if (errorListener.getSyntaxErrors().size() == 0) {
-                            if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
-
-                            // Execute the query
-                            dbConnection.executeQuery(generatedSQL);
-                        } else {
-                            System.out.println("You have an error in your SchenQL-Syntax.");
-                        }
+                        generatedSQL = compileSchenQL(query);
+                        if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
+                        // Execute the query
+                        dbConnection.executeQuery(generatedSQL);
                     } catch (java.lang.NullPointerException e) {
                         e.printStackTrace();
                         System.out.println("Something went wrong here.");
+                    } catch (SchenQLCompilerException e) {
+                        System.out.println("You have an error in your SchenQL-Syntax.");
                     }
                 } else {
                     System.out.println("Bye Bye :)");
@@ -85,6 +64,31 @@ public class Schenql {
         }
     }
 
+    public static String compileSchenQL(String schenQL) throws SchenQLCompilerException {
+        CharStream charStream = CharStreams.fromString(schenQL);
+
+        // Initializing the lexer
+        SchenqlLexer lexer = new SchenqlLexer(charStream);
+        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+        // Initializing the parser
+        SchenqlParser parser = new SchenqlParser(commonTokenStream);
+
+        // Adding error handling
+        SyntaxErrorListener errorListener = new SyntaxErrorListener();
+        parser.addErrorListener(errorListener);
+
+        // Getting the rootContext
+        SchenqlParser.RootContext rootContext = parser.root();
+        RootVisitor visitor = new RootVisitor();
+
+        if (errorListener.getSyntaxErrors().size() == 0) {
+            // Generate SQL
+            return visitor.visit(rootContext).buildQuery();
+        } else {
+            throw new SchenQLCompilerException();
+        }
+    }
 
     private static void printWelcomeMessage() {
         System.out.print(" ____       _                 ___  _\n");
@@ -94,7 +98,7 @@ public class Schenql {
         System.out.print("|____/ \\___|_| |_|\\___|_| |_|\\__\\_\\_____|\n\n");
 
         System.out.println("Welcome to SchenQL – The Schenql Query Language");
-        System.out.println("Version: 1.0.2");
+        System.out.println("Version: 1.1.0");
         System.out.println("Type 'exit;' for exit.\n");
     }
 }

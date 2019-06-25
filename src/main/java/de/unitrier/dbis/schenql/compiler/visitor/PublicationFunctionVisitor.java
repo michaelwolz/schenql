@@ -2,34 +2,33 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.sqlquerybuilder.OrderBy;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-public class PublicationFunctionVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitPublicationFunction(SchenqlParser.PublicationFunctionContext ctx) {
+class PublicationFunctionVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitPublicationFunction(SchenqlParser.PublicationFunctionContext ctx, Query sqlQuery) {
         if (ctx.MOST_CITED() != null) {
-            PublicationQueryVisitor pqv = new PublicationQueryVisitor();
-            if (!(ctx.getParent().getParent().getRuleContext() instanceof SchenqlParser.QueryContext)) {
-                return "SELECT * FROM (SELECT DISTINCT `sub`.`dblpKey` FROM (" +
-                        pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{
-                                "`publication`.`dblpKey`"
-                        }) +
-                        ") as `sub` " +
-                        "JOIN `publication_references` " +
-                        "ON `publication_references`.`pub2_id` = `sub`.`dblpKey` " +
-                        "GROUP BY `sub`.`dblpKey` ORDER BY COUNT(`sub`.`dblpKey`) DESC LIMIT 5) as optim";
+            sqlQuery.addSelect("publication", "dblpKey");
+            if ((ctx.getParent().getParent().getRuleContext() instanceof SchenqlParser.QueryContext)) {
+                sqlQuery.addSelect("publication", "title");
+                sqlQuery.addSelect("publication", "year");
             }
 
-            return "SELECT `sub`.`title`, `sub`.`year`, COUNT(`sub`.`dblpKey`) as `citations` FROM (" +
-                    pqv.visitPublicationQuery(ctx.publicationQuery(), new String[]{
-                            "`publication`.`dblpKey`",
-                            "`publication`.`title`",
-                            "`publication`.`year`",
-                    }) +
-                    ") as `sub` " +
-                    "JOIN `publication_references` " +
-                    "ON `publication_references`.`pub2_id` = `sub`.`dblpKey` " +
-                    "GROUP BY `sub`.`dblpKey` ORDER BY `citations` DESC";
+            PublicationQueryVisitor pqv = new PublicationQueryVisitor();
+            pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery);
+
+            sqlQuery.addJoin(
+                    "publication_references",
+                    "pub2_id",
+                    "publication",
+                    "dblpKey"
+            );
+
+            sqlQuery.addGroupBy("publication", "title");
+            OrderBy ob = new OrderBy("COUNT(*)");
+            ob.setSortOrder("DESC");
+            sqlQuery.addOrderBy(ob);
+            sqlQuery.addLimit(5);
         }
-        return null;
     }
 }

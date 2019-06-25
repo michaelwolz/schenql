@@ -5,6 +5,7 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
+import de.unitrier.dbis.sqlquerybuilder.condition.FulltextCondition;
 
 class PublicationVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPublication(SchenqlParser.PublicationContext ctx, Query sqlQuery) {
@@ -12,8 +13,6 @@ class PublicationVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationQueryVisitor pqv = new PublicationQueryVisitor();
             pqv.visitPublicationQuery(ctx.publicationQuery(), sqlQuery);
         } else if (ctx.DBLP_KEY() != null) {
-            sqlQuery.distinct();
-            sqlQuery.addSelect("publication", "title");
             sqlQuery.addFrom("publication");
             sqlQuery.addCondition(
                     new BooleanCondition(
@@ -24,24 +23,25 @@ class PublicationVisitor extends SchenqlParserBaseVisitor<Void> {
                     )
             );
         } else {
-//            // TODO: This is not nice
-//            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.JournalConditionContext) {
-//                return "SELECT `publication`.`journal_dblpKey` FROM `publication` WHERE " +
-//                        "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
-//            }
-//            if (ctx.getParent().getRuleContext() instanceof SchenqlParser.ConferenceConditionContext) {
-//                return "SELECT `publication`.`conference_dblpKey` FROM `publication` WHERE " +
-//                        "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
-//            }
-//            return "SELECT `publication`.`dblpKey` FROM `publication` WHERE " +
-//                    "`publication`.`title` " + Helper.sqlStringComparison(ctx.STRING().getText());
-//
-//            // Is it necessary to have a full text match when using titles as literal?
-///*            return "SELECT `fulltext_match`.`dblpKey` FROM (SELECT `publication`.`dblpKey`, " +
-//                    "MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\") as `relevance`" +
-//                    "FROM `publication`" +
-//                    "WHERE MATCH(`publication`.`title`) AGAINST(\"" + ctx.STRING().getText() + "\")" +
-//                    "ORDER BY `relevance` DESC) as `fulltext_match`";*/
+            sqlQuery.addFrom("publication");
+            if (ctx.TILDE() != null) {
+                sqlQuery.addCondition(
+                        new FulltextCondition(
+                                "publication",
+                                "title",
+                                ctx.STRING().getText()
+                        )
+                );
+            } else {
+                sqlQuery.addCondition(
+                        new BooleanCondition(
+                                "publication",
+                                "title",
+                                BooleanOperator.EQUALS,
+                                ctx.STRING().getText()
+                        )
+                );
+            }
         }
     }
 }

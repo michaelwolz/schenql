@@ -28,6 +28,7 @@ DBLP_KEY:               (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
                         )
                         ~('\r' | '\n' | '"')*
                         (DOUBLE_QUOTE_SYMB | SINGLE_QUOTE_SYMB)
+                        {setText(getText().substring(1, getText().length()-1));}
                         ;
 
 // Conditions

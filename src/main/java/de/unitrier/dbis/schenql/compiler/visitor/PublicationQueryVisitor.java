@@ -73,7 +73,7 @@ class PublicationQueryVisitor extends SchenqlParserBaseVisitor<Void> {
 
         if (ctx.publicationFunction() != null) {
             PublicationFunctionVisitor pfv = new PublicationFunctionVisitor();
-            pfv.visitPublicationFunction(ctx.publicationFunction());
+            pfv.visitPublicationFunction(ctx.publicationFunction(), sqlQuery);
         }
     }
 }

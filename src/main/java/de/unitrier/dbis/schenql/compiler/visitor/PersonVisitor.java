@@ -25,8 +25,6 @@ class PersonVisitor extends SchenqlParserBaseVisitor<Void> {
                     )
             );
         } else if (ctx.ORCID_VALUE() != null) {
-            sqlQuery.distinct();
-            sqlQuery.addSelect("person", "dblpKey");
             sqlQuery.addFrom("person");
             sqlQuery.addCondition(
                     new BooleanCondition(
@@ -37,11 +35,15 @@ class PersonVisitor extends SchenqlParserBaseVisitor<Void> {
                     )
             );
         } else {
-            sqlQuery.distinct();
-            sqlQuery.addSelect("person", "dblpKey");
             sqlQuery.addFrom("person");
+            sqlQuery.addJoin(
+                    "person_names",
+                    "personKey",
+                    "person",
+                    "dblpKey"
+            );
 
-            BooleanCondition cond = new BooleanCondition("person", "orcid");
+            BooleanCondition cond = new BooleanCondition("person_names", "name");
             cond.setConditionValue(ctx.STRING().getText());
             if (ctx.TILDE() != null) {
                 cond.setOperator(SOUNDSLIKE);

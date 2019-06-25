@@ -22,15 +22,15 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "personKey"
             );
             Query subQuery = new Query();
+            subQuery.distinct();
+            subQuery.addSelect("person", "dblpKey");
             PersonVisitor pv = new PersonVisitor();
             pv.visitPerson(ctx.person(), subQuery);
-            sqlQuery.addJoin(
-                    new SubQueryJoin(
-                            subQuery,
-                            "person_subquery",
-                            "dblpKey",
+            sqlQuery.addCondition(
+                    new SubQueryCondition(
                             "person",
-                            "personKey"
+                            "dblpKey",
+                            subQuery
                     )
             );
         }
@@ -50,15 +50,15 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "personKey"
             );
             Query subQuery = new Query();
+            subQuery.distinct();
+            subQuery.addSelect("person", "dblpKey");
             PersonVisitor pv = new PersonVisitor();
             pv.visitPerson(ctx.person(), subQuery);
-            sqlQuery.addJoin(
-                    new SubQueryJoin(
-                            subQuery,
-                            "person_subquery",
-                            "dblpKey",
+            sqlQuery.addCondition(
+                    new SubQueryCondition(
                             "person",
-                            "personKey"
+                            "dblpKey",
+                            subQuery
                     )
             );
         }
@@ -166,12 +166,6 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
 
         if (ctx.APPEARED_IN() != null) {
             if (ctx.journal() != null) {
-                sqlQuery.addJoin(
-                        "journal_name",
-                        "journal_key",
-                        "publication",
-                        "dblpKey"
-                );
                 Query subQuery = new Query();
                 subQuery.distinct();
                 subQuery.addSelect("journal", "dblpKey");
@@ -180,7 +174,7 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
 
                 sqlQuery.addCondition(
                         new SubQueryCondition(
-                                "journal_name",
+                                "publication",
                                 "journal_dblpKey",
                                 subQuery
                         )
@@ -188,7 +182,7 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             } else if (ctx.conference() != null) {
                 Query subQuery = new Query();
                 subQuery.distinct();
-                subQuery.addSelect("journal", "dblpKey");
+                subQuery.addSelect("conference", "dblpKey");
                 ConferenceVisitor cv = new ConferenceVisitor();
                 cv.visitConference(ctx.conference(), subQuery);
 
@@ -221,8 +215,9 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 ConditionGroup condGroup = new ConditionGroup();
 
                 Query journalSubQuery = new Query();
-                sqlQuery.addFrom("journal");
-                sqlQuery.addCondition(
+                journalSubQuery.addSelect("journal", "dblpKey");
+                journalSubQuery.addFrom("journal");
+                journalSubQuery.addCondition(
                         new BooleanCondition(
                                 "journal",
                                 "acronym",
@@ -231,8 +226,9 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                         )
                 );
                 Query conferenceSubQuery = new Query();
-                sqlQuery.addFrom("conference");
-                sqlQuery.addCondition(
+                conferenceSubQuery.addSelect("conference", "dblpKey");
+                conferenceSubQuery.addFrom("conference");
+                conferenceSubQuery.addCondition(
                         new BooleanCondition(
                                 "conference",
                                 "acronym",
@@ -255,7 +251,6 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
 
                 condGroup.addCondition(cond1);
                 condGroup.addCondition(cond2);
-
                 sqlQuery.addCondition(condGroup);
             }
         }
@@ -273,8 +268,6 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-
-            sqlQuery.addGroupBy("publication", "dblpkey");
 
             sqlQuery.addCondition(
                     new SubQueryCondition(
@@ -298,8 +291,6 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-
-            sqlQuery.addGroupBy("publication", "dblpkey");
 
             sqlQuery.addCondition(
                     new SubQueryCondition(

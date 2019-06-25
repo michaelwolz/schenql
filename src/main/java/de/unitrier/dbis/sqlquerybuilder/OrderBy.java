@@ -5,11 +5,11 @@ public class OrderBy {
     private Field fieldName;
     private String sortOrder = "ASC";
 
-    OrderBy(String fieldName) {
+    public OrderBy(String fieldName) {
         this.fieldName = new Field(fieldName);
     }
 
-    OrderBy(String tableName, String fieldName) {
+    public OrderBy(String tableName, String fieldName) {
         this.tableName = new Table(tableName);
         this.fieldName = new Field(fieldName);
     }

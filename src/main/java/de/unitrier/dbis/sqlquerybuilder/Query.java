@@ -61,6 +61,10 @@ public class Query {
         groupBy.add(new GroupBy(groupByTable, groupByField));
     }
 
+    public void addOrderBy(OrderBy orderBy) {
+        this.orderBy.add(orderBy);
+    }
+
     public void addOrderBy(String orderByField) {
         orderBy.add(new OrderBy(orderByField));
     }

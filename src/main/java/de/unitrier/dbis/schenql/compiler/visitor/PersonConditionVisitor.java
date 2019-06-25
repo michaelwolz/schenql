@@ -24,6 +24,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             } else {
                 cond.setOperator(BooleanOperator.EQUALS);
             }
+            sqlQuery.addCondition(cond);
         }
 
         if (ctx.AUTHORED() != null) {
