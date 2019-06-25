@@ -17,13 +17,13 @@ public class RootVisitor extends SchenqlParserBaseVisitor<Query> {
             // Limit output
             if (ctx.query().LIMIT() != null)
                 sqlQuery.addLimit(Integer.parseInt(ctx.query().NUMBER().getText()));
-            else
+            else if (sqlQuery.getLimit() == null)
                 sqlQuery.addLimit(Schenql.DEFAULT_QUERY_LIMIT);
         }
 
         if (ctx.functionCall() != null) {
             FunctionCallVisitor av = new FunctionCallVisitor();
-            av.visitFunctionCall(ctx.functionCall());
+            av.visitFunctionCall(ctx.functionCall(), sqlQuery);
         }
 
         if (ctx.attributeOf() != null) {

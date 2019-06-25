@@ -11,6 +11,7 @@ class From {
 
     public From(Query subQuery, String alias) {
         this.subQuery = subQuery;
+        this.subQuery.isSubQuery = true;
         this.alias = alias;
     }
 
@@ -22,7 +23,7 @@ class From {
         return alias != null ? tableName.getQueryString() + " as " + alias : tableName.getQueryString();
     }
 
-    String getStatement() {
+    String createStatement() {
         if (subQuery != null) {
             return createSubQueryStatement();
         } else {

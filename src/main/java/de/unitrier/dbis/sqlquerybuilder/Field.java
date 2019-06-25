@@ -8,6 +8,6 @@ public class Field {
     }
 
     public String getQueryString() {
-        return Helper.encloseInApostrophe(this.fieldName);
+        return fieldName.equals("*") ? fieldName : Helper.encloseInApostrophe(fieldName);
     }
 }

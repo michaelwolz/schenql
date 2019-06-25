@@ -3,6 +3,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
+import de.unitrier.dbis.sqlquerybuilder.SubQueryJoin;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
 import de.unitrier.dbis.sqlquerybuilder.condition.ConditionGroup;
@@ -40,11 +41,14 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
+
+            sqlQuery.addJoin(
+                    new SubQueryJoin(
+                            subQuery,
+                            "publication_sub",
+                            "dblpKey",
                             "person_authored_publication",
-                            "publicationKey",
-                            subQuery
+                            "publicationKey"
                     )
             );
         }
@@ -62,11 +66,14 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
+
+            sqlQuery.addJoin(
+                    new SubQueryJoin(
+                            subQuery,
+                            "publication_sub",
+                            "dblpKey",
                             "person_edited_publication",
-                            "publicationKey",
-                            subQuery
+                            "publicationKey"
                     )
             );
         }

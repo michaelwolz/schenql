@@ -2,16 +2,24 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.sqlquerybuilder.AggregateFunction;
+import de.unitrier.dbis.sqlquerybuilder.Query;
 
-import javax.management.Query;
-
-public class FunctionCallVisitor extends SchenqlParserBaseVisitor<String> {
-    @Override
-    public String visitFunctionCall(SchenqlParser.FunctionCallContext ctx) {
+class FunctionCallVisitor extends SchenqlParserBaseVisitor<Void> {
+    void visitFunctionCall(SchenqlParser.FunctionCallContext ctx, Query sqlQuery) {
         if (ctx.COUNT() != null) {
+            AggregateFunction af = new AggregateFunction(
+                    "*",
+                    "COUNT"
+            );
+            af.setAlias("count");
+            sqlQuery.addSelect(af);
+
+            Query subQuery = new Query();
             QueryVisitor qv = new QueryVisitor();
-            return "SELECT COUNT(*) as \"Count\" FROM (" + qv.visitQuery(ctx.query()) + ") as count";
+            qv.visitQuery(ctx.query(), subQuery);
+
+            sqlQuery.addFrom(subQuery, "sub");
         }
-        return null;
     }
 }

@@ -12,6 +12,7 @@ public class SubQueryJoin extends AbstractJoin {
         this.onField = new Field(onField);
         this.joinField = new Field(joinField);
         this.subQuery = subQuery;
+        this.subQuery.isSubQuery = true;
         this.alias = alias;
     }
 

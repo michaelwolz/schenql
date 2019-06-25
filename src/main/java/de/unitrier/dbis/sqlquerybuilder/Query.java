@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.StringJoiner;
 
 public class Query {
-    private ArrayList<Select> select = new ArrayList<>();
+    private ArrayList<Selectable> select = new ArrayList<>();
     private boolean distinct = false;
     private ArrayList<From> from = new ArrayList<>();
     private ArrayList<AbstractJoin> joins = new ArrayList<>();
     private ArrayList<Condition> conditions = new ArrayList<>();
-    private ArrayList<GroupBy> groupBy = new ArrayList<>();
+    private ArrayList<Selectable> groupBy = new ArrayList<>();
     private ArrayList<OrderBy> orderBy = new ArrayList<>();
-    private int limit = 0;
+    private Integer limit;
     public boolean isSubQuery = false;
 
     public void addSelect(String selectField) {
@@ -25,7 +25,7 @@ public class Query {
         select.add(new Select(tableName, selectField));
     }
 
-    public void addSelect(Select selectField) {
+    public void addSelect(Selectable selectField) {
         select.add(selectField);
     }
 
@@ -54,11 +54,11 @@ public class Query {
     }
 
     public void addGroupBy(String groupByField) {
-        groupBy.add(new GroupBy(groupByField));
+        groupBy.add(new Selectable(groupByField));
     }
 
     public void addGroupBy(String groupByTable, String groupByField) {
-        groupBy.add(new GroupBy(groupByTable, groupByField));
+        groupBy.add(new Selectable(groupByTable, groupByField));
     }
 
     public void addOrderBy(OrderBy orderBy) {
@@ -70,11 +70,15 @@ public class Query {
     }
 
     public void addOrderBy(String orderByTable, String orderByField) {
-        orderBy.add(new OrderBy(orderByTable, orderByField));
+        this.orderBy.add(new OrderBy(orderByTable, orderByField));
     }
 
-    public void addLimit(int limit) {
+    public void addLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    public Integer getLimit() {
+        return limit;
     }
 
     public boolean selectIsEmpty() {
@@ -83,8 +87,8 @@ public class Query {
 
     private String createSelectFields() {
         StringJoiner selectString = new StringJoiner(", ");
-        for (Select selectField : select) {
-            selectString.add(selectField.getStatement());
+        for (Selectable selectField : select) {
+            selectString.add(selectField.createStatement());
         }
         return selectString.toString();
     }
@@ -92,7 +96,7 @@ public class Query {
     private String createFrom() {
         StringJoiner fromString = new StringJoiner(", ");
         for (From fromTable : from) {
-            fromString.add(fromTable.getStatement());
+            fromString.add(fromTable.createStatement());
         }
         return fromString.toString();
     }
@@ -112,7 +116,7 @@ public class Query {
 
     private String createGroupBy() {
         StringJoiner groupByString = new StringJoiner(", ");
-        for (GroupBy groupByField : groupBy) {
+        for (Selectable groupByField : groupBy) {
             groupByString.add(groupByField.createStatement());
         }
         return groupByString.toString();
@@ -168,7 +172,7 @@ public class Query {
         }
 
         // LIMIT
-        if (limit > 0) {
+        if (limit != null && limit > 0) {
             query.add("LIMIT");
             query.add(Integer.toString(limit));
         }

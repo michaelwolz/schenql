@@ -34,7 +34,7 @@ public class TestPerson {
     @Test
     public void TestAuthored() {
         String schenQLQuery = "PERSONS AUTHORED \"DBLP - Some Lessons Learned.\"";
-        String expected = "SELECT DISTINCT `person`.`primaryName`, `person`.`orcid` FROM `person` JOIN `person_authored_publication` ON `person_authored_publication`.`personKey` = `person`.`dblpKey` WHERE `person_authored_publication`.`publicationKey` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'DBLP - Some Lessons Learned.') LIMIT 100;";
+        String expected = "SELECT DISTINCT `person`.`primaryName`, `person`.`orcid` FROM `person` JOIN `person_authored_publication` ON `person_authored_publication`.`personKey` = `person`.`dblpKey` JOIN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'DBLP - Some Lessons Learned.') as publication_sub ON publication_sub.`dblpKey` = `person_authored_publication`.`publicationKey` LIMIT 100;";
         try {
             assertEquals(expected, Schenql.compileSchenQL(schenQLQuery));
         } catch (SchenQLCompilerException e) {
@@ -45,7 +45,7 @@ public class TestPerson {
     @Test
     public void TestEdited() {
         String schenQLQuery = "PERSONS EDITED \"DBLP - Some Lessons Learned.\"";
-        String expected = "SELECT DISTINCT `person`.`primaryName`, `person`.`orcid` FROM `person` JOIN `person_edited_publication` ON `person_edited_publication`.`personKey` = `person`.`dblpKey` WHERE `person_edited_publication`.`publicationKey` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'DBLP - Some Lessons Learned.') LIMIT 100;";
+        String expected = "SELECT DISTINCT `person`.`primaryName`, `person`.`orcid` FROM `person` JOIN `person_edited_publication` ON `person_edited_publication`.`personKey` = `person`.`dblpKey` JOIN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'DBLP - Some Lessons Learned.') as publication_sub ON publication_sub.`dblpKey` = `person_edited_publication`.`publicationKey` LIMIT 100;";
         try {
             assertEquals(expected, Schenql.compileSchenQL(schenQLQuery));
         } catch (SchenQLCompilerException e) {
