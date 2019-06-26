@@ -2,6 +2,8 @@ package de.unitrier.dbis.sqlquerybuilder.condition;
 
 import de.unitrier.dbis.sqlquerybuilder.Query;
 
+import java.util.Objects;
+
 public class SubQueryCondition extends Condition {
     private Query subQuery;
 
@@ -15,6 +17,21 @@ public class SubQueryCondition extends Condition {
         super(tableName, fieldName);
         this.subQuery = subQuery;
         this.subQuery.isSubQuery = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SubQueryCondition)) {
+            return false;
+        }
+
+        if (!super.equals(o)) return false;
+
+        SubQueryCondition c = (SubQueryCondition) o;
+        return Objects.equals(c.subQuery, subQuery);
     }
 
     @Override

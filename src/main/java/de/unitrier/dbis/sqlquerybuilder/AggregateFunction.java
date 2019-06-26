@@ -19,6 +19,22 @@ public class AggregateFunction extends Selectable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AggregateFunction)) {
+            return false;
+        }
+
+        AggregateFunction c = (AggregateFunction) o;
+        return c.tableName.equals(super.tableName) &&
+                c.fieldName.equals(super.fieldName) &&
+                c.alias.equals(alias) &&
+                c.function.equals(function);
+    }
+
+    @Override
     public String createStatement() {
         String stmnt = function + "(" + super.createStatement() + ")";
         if (alias != null) {

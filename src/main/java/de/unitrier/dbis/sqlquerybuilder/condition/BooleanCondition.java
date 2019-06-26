@@ -1,5 +1,6 @@
 package de.unitrier.dbis.sqlquerybuilder.condition;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class BooleanCondition extends Condition {
@@ -38,6 +39,22 @@ public class BooleanCondition extends Condition {
         super(tableName, fieldName);
         this.operator = operator;
         this.conditionValue = new NumericConditionValue(conditionValue);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof BooleanCondition)) {
+            return false;
+        }
+
+        if (!super.equals(o)) return false;
+
+        BooleanCondition c = (BooleanCondition) o;
+        return  c.operator == operator &&
+                c.conditionValue.equals(conditionValue);
     }
 
     public void setOperator(BooleanOperator operator) {

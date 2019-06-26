@@ -1,11 +1,12 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class SubQueryJoin extends AbstractJoin {
-    Query subQuery;
-    String alias;
-    Field joinField;
+    private Query subQuery;
+    private String alias;
+    private Field joinField;
 
     public SubQueryJoin(Query subQuery, String alias, String joinField, String onTable, String onField) {
         this.onTable = new Table(onTable);
@@ -14,6 +15,23 @@ public class SubQueryJoin extends AbstractJoin {
         this.subQuery = subQuery;
         this.subQuery.isSubQuery = true;
         this.alias = alias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SubQueryJoin)) {
+            return false;
+        }
+
+        if (!super.equals(o)) return false;
+
+        SubQueryJoin c = (SubQueryJoin) o;
+        return Objects.equals(c.subQuery, subQuery) &&
+                Objects.equals(c.joinField, joinField) &&
+                Objects.equals(c.alias, alias);
     }
 
     @Override

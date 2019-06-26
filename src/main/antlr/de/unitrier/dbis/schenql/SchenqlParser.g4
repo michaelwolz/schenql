@@ -138,5 +138,5 @@ functionCall
 
 // Attributes
 attributeOf
-    : STRING OF query
+    : (STRING COMMA)* STRING OF query
     ;

@@ -1,18 +1,35 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
+import java.util.Objects;
+
 class From {
     private Table tableName;
     private String alias;
     private Query subQuery;
 
-    public From(String tableName) {
+    From(String tableName) {
         this.tableName = new Table(tableName);
     }
 
-    public From(Query subQuery, String alias) {
+    From(Query subQuery, String alias) {
         this.subQuery = subQuery;
         this.subQuery.isSubQuery = true;
         this.alias = alias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof From)) {
+            return false;
+        }
+
+        From c = (From) o;
+        return Objects.equals(c.tableName, tableName) &&
+                Objects.equals(c.alias, alias) &&
+                Objects.equals(c.subQuery, subQuery);
     }
 
     private String createSubQueryStatement() {

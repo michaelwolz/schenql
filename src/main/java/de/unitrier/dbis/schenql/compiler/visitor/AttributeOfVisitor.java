@@ -7,7 +7,7 @@ import de.unitrier.dbis.sqlquerybuilder.Query;
 class AttributeOfVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitAttributeOf(SchenqlParser.AttributeOfContext ctx, Query sqlQuery) {
         QueryVisitor qv = new QueryVisitor();
-        sqlQuery.addSelect(ctx.STRING().getText());
+        ctx.STRING().forEach(attribute -> sqlQuery.addSelect(attribute.getText()));
         qv.visitQuery(ctx.query(), sqlQuery);
     }
 }

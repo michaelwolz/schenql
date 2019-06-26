@@ -3,6 +3,7 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
+import de.unitrier.dbis.sqlquerybuilder.AggregateFunction;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
@@ -16,6 +17,25 @@ class PublicationQueryVisitor extends SchenqlParserBaseVisitor<Void> {
                 Arrays.stream(DefaultFields.publication).forEach(selectField -> {
                     sqlQuery.addSelect("publication", selectField);
                 });
+                /*sqlQuery.addJoin(
+                        "person_authored_publication",
+                        "publicationKey",
+                        "publication",
+                        "dblpKey"
+                );
+                sqlQuery.addJoin(
+                        "person",
+                        "dblpKey",
+                        "person_authored_publication",
+                        "personKey"
+                );
+                AggregateFunction af = new AggregateFunction(
+                        "person",
+                        "primaryName",
+                        "GROUP_CONCAT"
+                );
+                sqlQuery.addSelect(af);
+                sqlQuery.addGroupBy("publication", "title");*/
             }
 
             sqlQuery.distinct();

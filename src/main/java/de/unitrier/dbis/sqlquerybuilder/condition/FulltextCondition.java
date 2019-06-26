@@ -2,6 +2,7 @@ package de.unitrier.dbis.sqlquerybuilder.condition;
 
 import de.unitrier.dbis.sqlquerybuilder.Helper;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class FulltextCondition extends Condition {
@@ -15,6 +16,21 @@ public class FulltextCondition extends Condition {
     public FulltextCondition(String tableName, String fieldName, String against) {
         super(tableName, fieldName);
         this.against = against;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof  FulltextCondition)) {
+            return false;
+        }
+
+        if (!super.equals(o)) return false;
+
+        FulltextCondition c = (FulltextCondition) o;
+        return Objects.equals(c.against, against);
     }
 
     @Override

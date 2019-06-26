@@ -7,6 +7,18 @@ public class Table {
         this.tableName = tableName;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Table)) {
+            return false;
+        }
+        Table c = (Table) o;
+        return c.tableName.equals(tableName);
+    }
+
     public String getQueryString() {
         return Helper.encloseInApostrophe(this.tableName);
     }

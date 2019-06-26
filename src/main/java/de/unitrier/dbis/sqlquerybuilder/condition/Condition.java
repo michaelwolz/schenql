@@ -3,11 +3,13 @@ package de.unitrier.dbis.sqlquerybuilder.condition;
 import de.unitrier.dbis.sqlquerybuilder.Field;
 import de.unitrier.dbis.sqlquerybuilder.Table;
 
+import java.util.Objects;
+
 public abstract class Condition {
     protected Table tableName;
     protected Field fieldName;
     protected boolean or = false;
-    protected boolean negate = false;
+    boolean negate = false;
 
     Condition() {
     }
@@ -19,6 +21,22 @@ public abstract class Condition {
     Condition(String tableName, String fieldName) {
         this.tableName = new Table(tableName);
         this.fieldName = new Field(fieldName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Condition)) {
+            return false;
+        }
+
+        Condition c = (Condition) o;
+        return Objects.equals(c.tableName, tableName) &&
+                Objects.equals(c.fieldName, fieldName) &&
+                c.or == or &&
+                c.negate == negate;
     }
 
     public void or() {

@@ -28,7 +28,7 @@ public class RootVisitor extends SchenqlParserBaseVisitor<Query> {
 
         if (ctx.attributeOf() != null) {
             AttributeOfVisitor aov = new AttributeOfVisitor();
-            aov.visitAttributeOf(ctx.attributeOf());
+            aov.visitAttributeOf(ctx.attributeOf(), sqlQuery);
 
             // Limit output
             if (ctx.attributeOf().query().LIMIT() != null) {

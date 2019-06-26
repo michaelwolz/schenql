@@ -1,5 +1,7 @@
 package de.unitrier.dbis.sqlquerybuilder;
 
+import java.util.Objects;
+
 public class Select extends Selectable {
     private String alias;
 
@@ -14,6 +16,22 @@ public class Select extends Selectable {
     Select(String tableName, String fieldName, String alias) {
         super(tableName, fieldName);
         this.alias = alias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Select)) {
+            return false;
+        }
+
+        Select c = (Select) o;
+
+        return Objects.equals(c.tableName, super.tableName) &&
+                Objects.equals(c.fieldName, super.fieldName) &&
+                Objects.equals(c.alias, alias);
     }
 
     @Override

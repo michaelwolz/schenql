@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 
 public class InCondition extends Condition {
-    ArrayList<String> values = new ArrayList<>();
+    private ArrayList<String> values = new ArrayList<>();
 
     public InCondition(String fieldName) {
         super(fieldName);
@@ -25,6 +25,23 @@ public class InCondition extends Condition {
     public InCondition(String tableName, String fieldName, String... values) {
         super(tableName, fieldName);
         this.values.addAll(Arrays.asList(values));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof InCondition)) {
+            return false;
+        }
+
+        if (!super.equals(o)) return false;
+
+        InCondition c = (InCondition) o;
+        // This has a really bad performance
+        return c.values.size() == values.size() &&
+                c.values.containsAll(values) && values.containsAll(c.values);
     }
 
     public void addValue(String value) {

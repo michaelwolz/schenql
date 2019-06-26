@@ -18,15 +18,17 @@ public class Query {
     public boolean isSubQuery = false;
 
     public void addSelect(String selectField) {
-        select.add(new Select(selectField));
+        Select s = new Select(selectField);
+        if (!select.contains(s)) select.add(s);
     }
 
     public void addSelect(String tableName, String selectField) {
-        select.add(new Select(tableName, selectField));
+        Select s = new Select(tableName, selectField);
+        if (!select.contains(s)) select.add(s);
     }
 
-    public void addSelect(Selectable selectField) {
-        select.add(selectField);
+    public void addSelect(Selectable s) {
+        if (!select.contains(s)) select.add(s);
     }
 
     public void distinct() {
@@ -34,43 +36,50 @@ public class Query {
     }
 
     public void addFrom(String fromTable) {
-        from.add(new From(fromTable));
+        From f = new From(fromTable);
+        if (!from.contains(f)) from.add(f);
     }
 
     public void addFrom(Query subQuery, String alias) {
-        from.add(new From(subQuery, alias));
+        From f = new From(subQuery, alias);
+        if (!from.contains(f)) from.add(f);
     }
 
     public void addJoin(SubQueryJoin subQueryJoin) {
-        joins.add(subQueryJoin);
+        if (!joins.contains(subQueryJoin)) joins.add(subQueryJoin );
     }
 
     public void addJoin(String joinTable, String joinField, String onTable, String onField) {
-        joins.add(new Join(joinTable, joinField, onTable, onField));
+        Join j = new Join(joinTable, joinField, onTable, onField);
+        if (!joins.contains(j)) joins.add(j);
     }
 
     public void addCondition(Condition condition) {
-        conditions.add(condition);
+        if (!conditions.contains(condition)) conditions.add(condition);
     }
 
     public void addGroupBy(String groupByField) {
-        groupBy.add(new Selectable(groupByField));
+        Selectable gb = new Selectable(groupByField);
+        if (!groupBy.contains(gb)) groupBy.add(gb);
     }
 
     public void addGroupBy(String groupByTable, String groupByField) {
-        groupBy.add(new Selectable(groupByTable, groupByField));
+        Selectable gb = new Selectable(groupByTable, groupByField);
+        if (!groupBy.contains(gb)) groupBy.add(gb);
     }
 
     public void addOrderBy(OrderBy orderBy) {
-        this.orderBy.add(orderBy);
+        if (!this.orderBy.contains(orderBy)) this.orderBy.add(orderBy);
     }
 
     public void addOrderBy(String orderByField) {
-        orderBy.add(new OrderBy(orderByField));
+        OrderBy ob = new OrderBy(orderByField);
+        if (!this.orderBy.contains(ob)) this.orderBy.add(ob);
     }
 
     public void addOrderBy(String orderByTable, String orderByField) {
-        this.orderBy.add(new OrderBy(orderByTable, orderByField));
+        OrderBy ob = new OrderBy(orderByTable, orderByField);
+        if (!this.orderBy.contains(ob)) this.orderBy.add(ob);
     }
 
     public void addLimit(Integer limit) {
@@ -84,6 +93,8 @@ public class Query {
     public boolean selectIsEmpty() {
         return select.size() == 0;
     }
+
+    // Creation
 
     private String createSelectFields() {
         StringJoiner selectString = new StringJoiner(", ");
@@ -129,6 +140,8 @@ public class Query {
         }
         return orderByString.toString();
     }
+
+    // Building
 
     public String buildQuery() {
         StringJoiner query = new StringJoiner(" ");
