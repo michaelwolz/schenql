@@ -19,6 +19,14 @@ public class Field {
         return c.fieldName.equals(fieldName);
     }
 
+    @Override
+    public String toString() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
 
     public String getQueryString() {
         return fieldName.equals("*") ? fieldName : Helper.encloseInApostrophe(fieldName);

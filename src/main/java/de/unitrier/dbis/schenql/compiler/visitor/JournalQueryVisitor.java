@@ -10,20 +10,18 @@ import java.util.Arrays;
 class JournalQueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitJournalQuery(SchenqlParser.JournalQueryContext ctx, Query sqlQuery) {
         if (ctx.JOURNAL() != null) {
-            if (sqlQuery.selectIsEmpty()) {
-                Arrays.stream(DefaultFields.journal).forEach(selectField -> {
-                    sqlQuery.addSelect("journal", selectField);
-                });
-            }
+            if (sqlQuery.selectIsEmpty())
+                Arrays.stream(DefaultFields.journal).forEach(selectField ->
+                        sqlQuery.addSelect("journal", selectField));
+
 
             sqlQuery.distinct();
             sqlQuery.addFrom("journal");
 
             JournalConditionVisitor jcv = new JournalConditionVisitor();
             ctx.journalCondition()
-                    .forEach(conditionCtx -> {
-                        jcv.visitJournalCondition(conditionCtx, sqlQuery);
-                    });
+                    .forEach(conditionCtx ->
+                            jcv.visitJournalCondition(conditionCtx, sqlQuery));
         }
     }
 }

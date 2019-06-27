@@ -57,7 +57,7 @@ public class TestPublication {
         String schenQLQuery1 = "PUBLICATIONS ABOUT \"Domain Specific Query Languages\"";
         String schenQLQuery2 = "PUBLICATIONS ABOUT KEYWORD \"xml\"";
         String schenQLQuery3 = "PUBLICATIONS ABOUT KEYWORD [\"xml\", \"databases\"]";
-        String expected1 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` WHERE MATCH (`publication`.`abstract`) AGAINST ('Domain Specific Query Languages') LIMIT 100;";
+        String expected1 = "SELECT DISTINCT `publication`.`title`, `publication`.`year`, (MATCH (`publication`.`abstract`) AGAINST ('Domain Specific Query Languages')) as `r_abstract` FROM `publication` WHERE MATCH (`publication`.`abstract`) AGAINST ('Domain Specific Query Languages') ORDER BY `r_abstract` DESC LIMIT 100;";
         String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_has_keyword` ON `publication_has_keyword`.`dblpKey` = `publication`.`dblpKey` WHERE `publication_has_keyword`.`keyword` IN (SELECT DISTINCT `keyword`.`keyword` FROM `keyword` WHERE `keyword`.`keyword` IN ('xml')) LIMIT 100;";
         String expected3 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_has_keyword` ON `publication_has_keyword`.`dblpKey` = `publication`.`dblpKey` WHERE `publication_has_keyword`.`keyword` IN (SELECT DISTINCT `keyword`.`keyword` FROM `keyword` WHERE `keyword`.`keyword` IN ('xml','databases')) LIMIT 100;";
         try {
@@ -127,7 +127,7 @@ public class TestPublication {
         String schenQLQuery1 = "PUBLICATIONS CITED BY \"SchenQL\"";
         String schenQLQuery2 = "PUBLICATIONS CITED BY ~\"SchenQL\"";
         String expected1 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub2_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub_id` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'SchenQL') LIMIT 100;";
-        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub2_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub_id` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL')) LIMIT 100;";
+        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub2_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub_id` IN (SELECT DISTINCT `publication`.`dblpKey`, (MATCH (`publication`.`title`) AGAINST ('SchenQL')) as `r_title` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL') ORDER BY `r_title` DESC) LIMIT 100;";
         try {
             assertEquals(expected1, Schenql.compileSchenQL(schenQLQuery1));
             assertEquals(expected2, Schenql.compileSchenQL(schenQLQuery2));
@@ -141,7 +141,7 @@ public class TestPublication {
         String schenQLQuery1 = "PUBLICATIONS REFERENCING \"SchenQL\"";
         String schenQLQuery2 = "PUBLICATIONS REFERENCING ~\"SchenQL\"";
         String expected1 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub2_id` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE `publication`.`title` = 'SchenQL') LIMIT 100;";
-        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub2_id` IN (SELECT DISTINCT `publication`.`dblpKey` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL')) LIMIT 100;";
+        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` JOIN `publication_references` ON `publication_references`.`pub_id` = `publication`.`dblpKey` WHERE `publication_references`.`pub2_id` IN (SELECT DISTINCT `publication`.`dblpKey`, (MATCH (`publication`.`title`) AGAINST ('SchenQL')) as `r_title` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL') ORDER BY `r_title` DESC) LIMIT 100;";
         try {
             assertEquals(expected1, Schenql.compileSchenQL(schenQLQuery1));
             assertEquals(expected2, Schenql.compileSchenQL(schenQLQuery2));
@@ -155,7 +155,7 @@ public class TestPublication {
         String schenQLQuery1 = "PUBLICATIONS TITLED \"SchenQL\"";
         String schenQLQuery2 = "PUBLICATIONS TITLED ~\"SchenQL\"";
         String expected1 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` WHERE `publication`.`title` = 'SchenQL' LIMIT 100;";
-        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL') LIMIT 100;";
+        String expected2 = "SELECT DISTINCT `publication`.`title`, `publication`.`year`, (MATCH (`publication`.`title`) AGAINST ('SchenQL')) as `r_title` FROM `publication` WHERE MATCH (`publication`.`title`) AGAINST ('SchenQL') ORDER BY `r_title` DESC LIMIT 100;";
         try {
             assertEquals(expected1, Schenql.compileSchenQL(schenQLQuery1));
             assertEquals(expected2, Schenql.compileSchenQL(schenQLQuery2));

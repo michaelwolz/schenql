@@ -10,20 +10,18 @@ import java.util.Arrays;
 class InstitutionQueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitInstitutionQuery(SchenqlParser.InstitutionQueryContext ctx, Query sqlQuery) {
         if (ctx.INSTITUTION() != null) {
-            if (sqlQuery.selectIsEmpty()) {
-                Arrays.stream(DefaultFields.institution).forEach(selectField -> {
-                    sqlQuery.addSelect("institution", selectField);
-                });
-            }
+            if (sqlQuery.selectIsEmpty())
+                Arrays.stream(DefaultFields.institution).forEach(selectField ->
+                        sqlQuery.addSelect("institution", selectField));
+
 
             sqlQuery.distinct();
             sqlQuery.addFrom("institution");
 
             InstitutionConditionVisitor icv = new InstitutionConditionVisitor();
             ctx.institutionCondition()
-                    .forEach(conditionCtx -> {
-                        icv.visitInstitutionCondition(conditionCtx, sqlQuery);
-                    });
+                    .forEach(conditionCtx ->
+                            icv.visitInstitutionCondition(conditionCtx, sqlQuery));
         }
     }
 }

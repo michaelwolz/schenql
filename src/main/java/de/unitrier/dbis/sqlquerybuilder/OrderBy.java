@@ -8,11 +8,11 @@ public class OrderBy {
     private AggregateFunction function;
     private String sortOrder = "ASC";
 
-    OrderBy(String fieldName) {
+    public OrderBy(String fieldName) {
         this.fieldName = new Field(fieldName);
     }
 
-    OrderBy(String tableName, String fieldName) {
+    public OrderBy(String tableName, String fieldName) {
         this.tableName = new Table(fieldName);
         this.fieldName = new Field(fieldName);
     }
@@ -35,6 +35,10 @@ public class OrderBy {
                 Objects.equals(c.fieldName, fieldName) &&
                 Objects.equals(c.function, function) &&
                 Objects.equals(c.sortOrder, sortOrder);
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName.setFieldName(fieldName);
     }
 
     public void setSortOrder(String order) {

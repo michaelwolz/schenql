@@ -10,11 +10,10 @@ import java.util.Arrays;
 class PersonQueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPersonQuery(SchenqlParser.PersonQueryContext ctx, Query sqlQuery) {
         if (ctx.PERSON() != null) {
-            if (sqlQuery.selectIsEmpty()) {
-                Arrays.stream(DefaultFields.person).forEach(selectField -> {
-                    sqlQuery.addSelect("person", selectField);
-                });
-            }
+            if (sqlQuery.selectIsEmpty())
+                Arrays.stream(DefaultFields.person).forEach(selectField ->
+                        sqlQuery.addSelect("person", selectField)
+                );
 
             sqlQuery.distinct();
             sqlQuery.addFrom("person");
@@ -39,9 +38,9 @@ class PersonQueryVisitor extends SchenqlParserBaseVisitor<Void> {
             }
             PersonConditionVisitor pcv = new PersonConditionVisitor();
             ctx.personCondition()
-                    .forEach(conditionCtx -> {
-                        pcv.visitPersonCondition(conditionCtx, sqlQuery);
-                    });
+                    .forEach(conditionCtx ->
+                            pcv.visitPersonCondition(conditionCtx, sqlQuery)
+                    );
         }
     }
 }

@@ -2,6 +2,7 @@ package de.unitrier.dbis.sqlquerybuilder;
 
 import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
 import de.unitrier.dbis.sqlquerybuilder.condition.ConditionGroup;
+import de.unitrier.dbis.sqlquerybuilder.condition.FulltextCondition;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
@@ -46,7 +47,7 @@ public class Query {
     }
 
     public void addJoin(SubQueryJoin subQueryJoin) {
-        if (!joins.contains(subQueryJoin)) joins.add(subQueryJoin );
+        if (!joins.contains(subQueryJoin)) joins.add(subQueryJoin);
     }
 
     public void addJoin(String joinTable, String joinField, String onTable, String onField) {
@@ -55,7 +56,17 @@ public class Query {
     }
 
     public void addCondition(Condition condition) {
-        if (!conditions.contains(condition)) conditions.add(condition);
+        if (!conditions.contains(condition)) {
+            if (condition instanceof FulltextCondition) {
+                String relevanceAlias = "r_" + condition.getFieldName();
+                OrderBy ob = new OrderBy(relevanceAlias);
+                ob.setSortOrder("DESC");
+
+                this.addSelect(new SelectCondition(condition, relevanceAlias));
+                this.addOrderBy(ob);
+            }
+            conditions.add(condition);
+        }
     }
 
     public void addGroupBy(String groupByField) {

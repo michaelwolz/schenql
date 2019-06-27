@@ -3,7 +3,6 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
-import de.unitrier.dbis.sqlquerybuilder.SubQueryJoin;
 import de.unitrier.dbis.sqlquerybuilder.condition.*;
 
 class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
@@ -121,13 +120,12 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                         )
                 );
             } else {
-                sqlQuery.addCondition(
-                        new FulltextCondition(
-                                "publication",
-                                "abstract",
-                                ctx.STRING().getText()
-                        )
+                FulltextCondition fc = new FulltextCondition(
+                        "publication",
+                        "abstract",
+                        ctx.STRING().getText()
                 );
+                sqlQuery.addCondition(fc);
             }
         }
 

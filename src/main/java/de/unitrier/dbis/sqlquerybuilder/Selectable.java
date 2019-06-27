@@ -4,6 +4,9 @@ class Selectable {
     protected Table tableName;
     protected Field fieldName;
 
+    Selectable() {
+    }
+
     Selectable(String fieldName) {
         this.fieldName = new Field(fieldName);
     }
@@ -23,7 +26,7 @@ class Selectable {
         }
 
         Selectable c = (Selectable) o;
-        return c.tableName.equals(tableName) && c.fieldName.equals(fieldName);
+        return tableName.equals(c.tableName) && fieldName.equals(c.fieldName);
     }
 
     String createStatement() {

@@ -47,6 +47,10 @@ public abstract class Condition {
         negate = true;
     }
 
+    public String getFieldName() {
+        return fieldName.toString();
+    }
+
     public String createStatement() {
         String stmnt = "";
         if (tableName != null) {
