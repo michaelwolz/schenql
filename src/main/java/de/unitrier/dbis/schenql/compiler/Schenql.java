@@ -16,51 +16,58 @@ import org.jline.terminal.TerminalBuilder;
 
 
 public class Schenql {
-    static final boolean EXACT_MATCH_STRINGS = true;
     public static final int DEFAULT_QUERY_LIMIT = 100;
     private static final boolean DEBUG_MODE = true;
 
     public static void main(String[] args) {
-        printWelcomeMessage();
-
-        DBConnection dbConnection = new DBConnection();
-
-        String generatedSQL;
-
-        try {
-            Terminal terminal = TerminalBuilder.terminal();
-            LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
-            String prompt = "schenql> ";
-
-            while (true) {
-                String query;
-                try {
-                    query = reader.readLine(prompt);
-                } catch (UserInterruptException e) {
-                    System.out.println("Bye Bye :)");
-                    break;
-                }
-
-                if (!query.equals("exit;")) {
-                    try {
-                        // Generate SQL
-                        generatedSQL = compileSchenQL(query);
-                        if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
-                        // Execute the query
-                        dbConnection.executeQuery(generatedSQL);
-                    } catch (java.lang.NullPointerException e) {
-                        e.printStackTrace();
-                        System.out.println("Something went wrong here.");
-                    } catch (SchenQLCompilerException e) {
-                        System.out.println("You have an error in your SchenQL-Syntax.");
-                    }
-                } else {
-                    System.out.println("Bye Bye :)");
-                    break;
-                }
+        if (args.length == 2 && args[0].equals("-query")) {
+            // Check for if query given by program call
+            try {
+                System.out.println(compileSchenQL(args[1]));
+            } catch (SchenQLCompilerException e) {
+                System.out.println("You have an error in your SchenQL-Syntax.");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            // Otherwise open terminal
+            printWelcomeMessage();
+            DBConnection dbConnection = new DBConnection();
+            String generatedSQL;
+
+            try {
+                Terminal terminal = TerminalBuilder.terminal();
+                LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+                String prompt = "schenql> ";
+
+                while (true) {
+                    String query;
+                    try {
+                        query = reader.readLine(prompt);
+                    } catch (UserInterruptException e) {
+                        System.out.println("Bye Bye :)");
+                        break;
+                    }
+
+                    if (!query.equals("exit;")) {
+                        try {
+                            // Generate SQL
+                            generatedSQL = compileSchenQL(query);
+                            if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
+                            // Execute the query
+                            dbConnection.executeQuery(generatedSQL);
+                        } catch (java.lang.NullPointerException e) {
+                            e.printStackTrace();
+                            System.out.println("Something went wrong here.");
+                        } catch (SchenQLCompilerException e) {
+                            System.out.println("You have an error in your SchenQL-Syntax.");
+                        }
+                    } else {
+                        System.out.println("Bye Bye :)");
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
