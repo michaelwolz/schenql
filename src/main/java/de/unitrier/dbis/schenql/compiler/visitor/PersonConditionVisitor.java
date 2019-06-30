@@ -39,11 +39,24 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            condition = new SubQueryCondition(
-                    "person_authored_publication",
-                    "publicationKey",
-                    subQuery
-            );
+            if (ctx.publication().publicationQuery() != null &&
+                    ctx.publication().publicationQuery().publicationFunction() != null) {
+                sqlQuery.addJoin(
+                        new SubQueryJoin(
+                                subQuery,
+                                "publication_authored_sub",
+                                "dblpKey",
+                                "person_authored_publication",
+                                "publicationKey"
+                        )
+                );
+            } else {
+                condition = new SubQueryCondition(
+                        "person_authored_publication",
+                        "publicationKey",
+                        subQuery
+                );
+            }
         } else if (ctx.EDITED() != null) {
             sqlQuery.addJoin(
                     "person_edited_publication",
@@ -58,11 +71,24 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            condition = new SubQueryCondition(
-                    "person_edited_publication",
-                    "publicationKey",
-                    subQuery
-            );
+            if (ctx.publication().publicationQuery() != null &&
+                    ctx.publication().publicationQuery().publicationFunction() != null) {
+                sqlQuery.addJoin(
+                        new SubQueryJoin(
+                                subQuery,
+                                "publication_edited_sub",
+                                "dblpKey",
+                                "person_edited_publication",
+                                "publicationKey"
+                        )
+                );
+            } else {
+                condition = new SubQueryCondition(
+                        "person_edited_publication",
+                        "publicationKey",
+                        subQuery
+                );
+            }
         } else if (ctx.WORKS_FOR() != null) {
             sqlQuery.addJoin(
                     "person_works_for_institution",
