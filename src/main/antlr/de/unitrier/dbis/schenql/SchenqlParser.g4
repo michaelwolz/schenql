@@ -16,37 +16,40 @@ root
 
 query
     : (publicationQuery | personQuery | institutionQuery | conferenceQuery | journalQuery | keywordQuery)
-    logicalOperator?
     (LIMIT NUMBER)?
     SEMI?
     ;
 
 // Logical Operators
 logicalOperator
-    : (or | and)
+    : (or | and) not?
+    | not
     ;
 
 or
-    : OR (query | not)
+    : OR
     ;
 
 and
-    : AND (query | not)
+    : AND
     ;
 
 not
-    : NOT query
+    : NOT
     ;
 
 // Publications
 publicationQuery
-    : publicationFunction | PUBLICATION publicationCondition*
+    : publicationFunction |
+    PUBLICATION
+    publicationCondition*
     ;
 
 publicationCondition
-    : WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT KEYWORD keyword | ABOUT STRING
+    : logicalOperator?
+    ( WRITTEN_BY person | EDITED_BY person | PUBLISHED_BY institution | ABOUT KEYWORD keyword | ABOUT STRING
     | BEFORE YEAR | AFTER YEAR | IN_YEAR YEAR | APPEARED_IN (STRING | DBLP_KEY | journal | conference)
-    | CITED_BY publication | REFERENCES publication | TITLE TILDE? STRING
+    | CITED_BY publication | REFERENCES publication | TITLE TILDE? STRING )
     ;
 
 publication
@@ -64,9 +67,10 @@ personQuery
     ;
 
 personCondition
-    : NAMED TILDE? STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
+    : logicalOperator?
+    ( NAMED TILDE? STRING | AUTHORED publication | EDITED publication | WORKS_FOR institution
     | PUBLISHED_WITH institution | PUBLISHED_IN (STRING | DBLP_KEY | conference | journal) | CITED_BY publication
-    | REFERENCES publication | ORCID ORCID_VALUE | WBC
+    | REFERENCES publication | ORCID ORCID_VALUE | WBC )
     ;
 
 person
@@ -76,11 +80,12 @@ person
 
 institutionQuery
     : INSTITUTION
-    institutionCondition*
+    (institutionCondition logicalOperator)*
     ;
 
 institutionCondition
-    : NAMED TILDE? STRING | CITY STRING | COUNTRY STRING | MEMBERS person
+    : logicalOperator?
+    ( NAMED TILDE? STRING | CITY STRING | COUNTRY STRING | MEMBERS person )
     ;
 
 institution
@@ -90,12 +95,13 @@ institution
 // Conferences
 conferenceQuery
     : CONFERENCE
-    conferenceCondition*
+    (conferenceCondition logicalOperator conferenceCondition | conferenceCondition)*
     ;
 
 conferenceCondition
-    : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
-    | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING
+    : logicalOperator?
+    ( NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
+    | BEFORE YEAR | IN_YEAR YEAR | CITY STRING | COUNTRY STRING )
     ;
 
 conference
@@ -109,8 +115,9 @@ journalQuery
     ;
 
 journalCondition
-    : NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
-    | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING
+    : logicalOperator?
+    ( NAMED STRING | ACRONYM STRING | ABOUT KEYWORD? keyword | AFTER YEAR | OF publication
+    | BEFORE YEAR | IN_YEAR YEAR | VOLUME STRING )
     ;
 
 journal
@@ -124,7 +131,8 @@ keywordQuery
     ;
 
 keywordCondition
-    : OF (publication | person | journal | conference)
+    : logicalOperator?
+    ( OF (publication | person | journal | conference) )
     ;
 
 keyword

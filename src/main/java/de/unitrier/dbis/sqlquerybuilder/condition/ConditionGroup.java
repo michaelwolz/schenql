@@ -46,9 +46,9 @@ public class ConditionGroup extends Condition {
             if (i > 0) {
                 Condition cond = conditions.get(i);
                 condString.add(cond.or ? "OR" : "AND");
-                if (cond.negate) {
-                    condString.add("NOT");
-                }
+            }
+            if (conditions.get(i).negate) {
+                condString.add("NOT");
             }
             condString.add(conditions.get(i).createStatement());
         }

@@ -4,13 +4,12 @@ import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.SubQueryJoin;
-import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
-import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
-import de.unitrier.dbis.sqlquerybuilder.condition.ConditionGroup;
-import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
+import de.unitrier.dbis.sqlquerybuilder.condition.*;
 
 class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPersonCondition(SchenqlParser.PersonConditionContext ctx, Query sqlQuery) {
+        Condition condition = null;
+
         if (ctx.NAMED() != null) {
             sqlQuery.addJoin(
                     "person_names",
@@ -25,10 +24,8 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             } else {
                 cond.setOperator(BooleanOperator.EQUALS);
             }
-            sqlQuery.addCondition(cond);
-        }
-
-        if (ctx.AUTHORED() != null) {
+            condition = cond;
+        } else if (ctx.AUTHORED() != null) {
             sqlQuery.addJoin(
                     "person_authored_publication",
                     "personKey",
@@ -42,18 +39,12 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addJoin(
-                    new SubQueryJoin(
-                            subQuery,
-                            "publication_sub",
-                            "dblpKey",
-                            "person_authored_publication",
-                            "publicationKey"
-                    )
+            condition = new SubQueryCondition(
+                    "person_authored_publication",
+                    "publicationKey",
+                    subQuery
             );
-        }
-
-        if (ctx.EDITED() != null) {
+        } else if (ctx.EDITED() != null) {
             sqlQuery.addJoin(
                     "person_edited_publication",
                     "personKey",
@@ -67,18 +58,12 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addJoin(
-                    new SubQueryJoin(
-                            subQuery,
-                            "publication_sub",
-                            "dblpKey",
-                            "person_edited_publication",
-                            "publicationKey"
-                    )
+            condition = new SubQueryCondition(
+                    "person_edited_publication",
+                    "publicationKey",
+                    subQuery
             );
-        }
-
-        if (ctx.WORKS_FOR() != null) {
+        } else if (ctx.WORKS_FOR() != null) {
             sqlQuery.addJoin(
                     "person_works_for_institution",
                     "personKey",
@@ -98,12 +83,11 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("institution", "key");
             InstitutionVisitor iv = new InstitutionVisitor();
             iv.visitInstitution(ctx.institution(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "institution",
-                            "key",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "institution",
+                    "key",
+                    subQuery
+
             );
         }
 
@@ -129,16 +113,13 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("institution", "key");
             InstitutionVisitor iv = new InstitutionVisitor();
             iv.visitInstitution(ctx.institution(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "institution",
-                            "key",
-                            subQuery
-                    )
-            );
-        }
+            condition = new SubQueryCondition(
+                    "institution",
+                    "key",
+                    subQuery
 
-        if (ctx.PUBLISHED_IN() != null) {
+            );
+        } else if (ctx.PUBLISHED_IN() != null) {
             sqlQuery.addJoin(
                     "person_authored_publication",
                     "personKey",
@@ -158,12 +139,10 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 subQuery.addSelect("publication", "conference_dblpKey");
                 ConferenceVisitor cv = new ConferenceVisitor();
                 cv.visitConference(ctx.conference(), subQuery);
-                sqlQuery.addCondition(
-                        new SubQueryCondition(
-                                "publication",
-                                "conference_dblpKey",
-                                subQuery
-                        )
+                condition = new SubQueryCondition(
+                        "publication",
+                        "conference_dblpKey",
+                        subQuery
                 );
             } else if (ctx.journal() != null) {
                 Query subQuery = new Query();
@@ -171,12 +150,10 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 subQuery.addSelect("publication", "journal_dblpKey");
                 JournalVisitor jv = new JournalVisitor();
                 jv.visitJournal(ctx.journal(), subQuery);
-                sqlQuery.addCondition(
-                        new SubQueryCondition(
-                                "publication",
-                                "journal_dblpKey",
-                                subQuery
-                        )
+                condition = new SubQueryCondition(
+                        "publication",
+                        "journal_dblpKey",
+                        subQuery
                 );
             } else if (ctx.DBLP_KEY() != null) {
                 ConditionGroup condGroup = new ConditionGroup();
@@ -195,13 +172,13 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 cond2.or();
                 condGroup.addCondition(cond1);
                 condGroup.addCondition(cond2);
-                sqlQuery.addCondition(condGroup);
+                condition = condGroup;
             } else {
                 ConditionGroup condGroup = new ConditionGroup();
 
                 Query journalSubQuery = new Query();
-                sqlQuery.addFrom("journal");
-                sqlQuery.addCondition(
+                journalSubQuery.addFrom("journal");
+                journalSubQuery.addCondition(
                         new BooleanCondition(
                                 "journal",
                                 "acronym",
@@ -210,8 +187,8 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                         )
                 );
                 Query conferenceSubQuery = new Query();
-                sqlQuery.addFrom("conference");
-                sqlQuery.addCondition(
+                conferenceSubQuery.addFrom("conference");
+                conferenceSubQuery.addCondition(
                         new BooleanCondition(
                                 "conference",
                                 "acronym",
@@ -237,9 +214,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
 
                 sqlQuery.addCondition(condGroup);
             }
-        }
-
-        if (ctx.CITED_BY() != null) {
+        } else if (ctx.CITED_BY() != null) {
             sqlQuery.addJoin(
                     "person_authored_publication",
                     "personKey",
@@ -259,16 +234,12 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_references",
-                            "pub2_id",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_references",
+                    "pub2_id",
+                    subQuery
             );
-        }
-
-        if (ctx.REFERENCES() != null) {
+        } else if (ctx.REFERENCES() != null) {
             sqlQuery.addJoin(
                     "person_authored_publication",
                     "personKey",
@@ -288,30 +259,34 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_references",
-                            "pub_id",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_references",
+                    "pub_id",
+                    subQuery
             );
-        }
-
-        if (ctx.ORCID() != null) {
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "person",
-                            "orcid",
-                            BooleanOperator.EQUALS,
-                            ctx.ORCID_VALUE().getText()
-                    )
+        } else if (ctx.ORCID() != null) {
+            condition = new BooleanCondition(
+                    "person",
+                    "orcid",
+                    BooleanOperator.EQUALS,
+                    ctx.ORCID_VALUE().getText()
             );
-        }
-
-        if (ctx.WBC() != null) {
+        } else if (ctx.WBC() != null) {
             System.out.println("primaryName: Christin Katharina Kreutz, orcid: 0000-0002-5075-7699");
             System.out.println("primaryName: Michael Wolz, orcid: 0000-0002-9313-7131");
             System.exit(1);
+        }
+
+        if (condition != null) {
+            if (ctx.logicalOperator() != null) {
+                if (ctx.logicalOperator().or() != null) {
+                    condition.or();
+                }
+                if (ctx.logicalOperator().not() != null) {
+                    condition.negate();
+                }
+            }
+            sqlQuery.addCondition(condition);
         }
     }
 }

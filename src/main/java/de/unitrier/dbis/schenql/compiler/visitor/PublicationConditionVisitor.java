@@ -7,6 +7,8 @@ import de.unitrier.dbis.sqlquerybuilder.condition.*;
 
 class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPublicationCondition(SchenqlParser.PublicationConditionContext ctx, Query sqlQuery) {
+        Condition condition = null;
+
         if (ctx.WRITTEN_BY() != null) {
             sqlQuery.addJoin(
                     "person_authored_publication",
@@ -25,17 +27,13 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("person", "dblpKey");
             PersonVisitor pv = new PersonVisitor();
             pv.visitPerson(ctx.person(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "person",
-                            "dblpKey",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "person",
+                    "dblpKey",
+                    subQuery
             );
-        }
-
-        // TODO: What if WRITTEN BY and EDITED BY is used in the same query?
-        if (ctx.EDITED_BY() != null) {
+        } else if (ctx.EDITED_BY() != null) {
+            // TODO: What if WRITTEN BY and EDITED BY is used in the same query?
             sqlQuery.addJoin(
                     "person_edited_publication",
                     "publicationKey",
@@ -53,17 +51,13 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("person", "dblpKey");
             PersonVisitor pv = new PersonVisitor();
             pv.visitPerson(ctx.person(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "person",
-                            "dblpKey",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "person",
+                    "dblpKey",
+                    subQuery
             );
-        }
-
-        // Note: Data is not sufficient for this
-        if (ctx.PUBLISHED_BY() != null) {
+        } else if (ctx.PUBLISHED_BY() != null) {
+            // Note: Data is not sufficient for this
             sqlQuery.addJoin(
                     "person_authored_publication",
                     "publicationKey",
@@ -89,16 +83,12 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             InstitutionVisitor iv = new InstitutionVisitor();
             iv.visitInstitution(ctx.institution(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "person_works_for_institution",
-                            "institutionKey",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "person_works_for_institution",
+                    "institutionKey",
+                    subQuery
             );
-        }
-
-        if (ctx.ABOUT() != null) {
+        } else if (ctx.ABOUT() != null) {
             if (ctx.KEYWORD() != null) {
                 sqlQuery.addJoin(
                         "publication_has_keyword",
@@ -112,57 +102,40 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 KeywordVisitor kv = new KeywordVisitor();
                 kv.visitKeyword(ctx.keyword(), subQuery);
 
-                sqlQuery.addCondition(
-                        new SubQueryCondition(
-                                "publication_has_keyword",
-                                "keyword",
-                                subQuery
-                        )
+                condition = new SubQueryCondition(
+                        "publication_has_keyword",
+                        "keyword",
+                        subQuery
                 );
             } else {
-                FulltextCondition fc = new FulltextCondition(
+                condition = new FulltextCondition(
                         "publication",
                         "abstract",
                         ctx.STRING().getText()
                 );
-                sqlQuery.addCondition(fc);
             }
-        }
-
-        if (ctx.BEFORE() != null) {
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.LT,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+        } else if (ctx.BEFORE() != null) {
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.LT,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.AFTER() != null) {
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.GT,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+        } else if (ctx.AFTER() != null) {
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.GT,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.IN_YEAR() != null) {
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.EQUALS,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+        } else if (ctx.IN_YEAR() != null) {
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.EQUALS,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.APPEARED_IN() != null) {
+        } else if (ctx.APPEARED_IN() != null) {
             if (ctx.journal() != null) {
                 Query subQuery = new Query();
                 subQuery.distinct();
@@ -170,12 +143,10 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 JournalVisitor jv = new JournalVisitor();
                 jv.visitJournal(ctx.journal(), subQuery);
 
-                sqlQuery.addCondition(
-                        new SubQueryCondition(
-                                "publication",
-                                "journal_dblpKey",
-                                subQuery
-                        )
+                condition = new SubQueryCondition(
+                        "publication",
+                        "journal_dblpKey",
+                        subQuery
                 );
             } else if (ctx.conference() != null) {
                 Query subQuery = new Query();
@@ -184,12 +155,10 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 ConferenceVisitor cv = new ConferenceVisitor();
                 cv.visitConference(ctx.conference(), subQuery);
 
-                sqlQuery.addCondition(
-                        new SubQueryCondition(
-                                "publication",
-                                "conference_dblpKey",
-                                subQuery
-                        )
+                condition = new SubQueryCondition(
+                        "publication",
+                        "conference_dblpKey",
+                        subQuery
                 );
             } else if (ctx.DBLP_KEY() != null) {
                 ConditionGroup condGroup = new ConditionGroup();
@@ -208,7 +177,7 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 cond2.or();
                 condGroup.addCondition(cond1);
                 condGroup.addCondition(cond2);
-                sqlQuery.addCondition(condGroup);
+                condition = condGroup;
             } else if (ctx.STRING() != null) {
                 ConditionGroup condGroup = new ConditionGroup();
 
@@ -249,11 +218,9 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
 
                 condGroup.addCondition(cond1);
                 condGroup.addCondition(cond2);
-                sqlQuery.addCondition(condGroup);
+                condition = condGroup;
             }
-        }
-
-        if (ctx.CITED_BY() != null) {
+        } else if (ctx.CITED_BY() != null) {
             sqlQuery.addJoin(
                     "publication_references",
                     "pub2_id",
@@ -267,16 +234,12 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_references",
-                            "pub_id",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_references",
+                    "pub_id",
+                    subQuery
             );
-        }
-
-        if (ctx.REFERENCES() != null) {
+        } else if (ctx.REFERENCES() != null) {
             sqlQuery.addJoin(
                     "publication_references",
                     "pub_id",
@@ -290,34 +253,38 @@ class PublicationConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_references",
-                            "pub2_id",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_references",
+                    "pub2_id",
+                    subQuery
             );
-        }
-
-        if (ctx.TITLE() != null) {
+        } else if (ctx.TITLE() != null) {
             if (ctx.TILDE() != null) {
-                sqlQuery.addCondition(
-                        new FulltextCondition(
-                                "publication",
-                                "title",
-                                ctx.STRING().getText()
-                        )
+                condition = new FulltextCondition(
+                        "publication",
+                        "title",
+                        ctx.STRING().getText()
                 );
             } else {
-                sqlQuery.addCondition(
-                        new BooleanCondition(
-                                "publication",
-                                "title",
-                                BooleanOperator.EQUALS,
-                                ctx.STRING().getText()
-                        )
+                condition = new BooleanCondition(
+                        "publication",
+                        "title",
+                        BooleanOperator.EQUALS,
+                        ctx.STRING().getText()
                 );
             }
+        }
+
+        if (condition != null) {
+            if (ctx.logicalOperator() != null) {
+                if (ctx.logicalOperator().or() != null) {
+                    condition.or();
+                }
+                if (ctx.logicalOperator().not() != null) {
+                    condition.negate();
+                }
+            }
+            sqlQuery.addCondition(condition);
         }
     }
 }

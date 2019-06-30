@@ -5,10 +5,13 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
+import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
 import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
 
 class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitJournalCondition(SchenqlParser.JournalConditionContext ctx, Query sqlQuery) {
+        Condition condition = null;
+
         if (ctx.NAMED() != null) {
             sqlQuery.addJoin(
                     "journal_name",
@@ -16,28 +19,20 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "journal",
                     "dblpKey"
             );
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "journal",
-                            "name",
-                            BooleanOperator.EQUALS,
-                            ctx.STRING().getText()
-                    )
+            condition = new BooleanCondition(
+                    "journal",
+                    "name",
+                    BooleanOperator.EQUALS,
+                    ctx.STRING().getText()
             );
-        }
-
-        if (ctx.ACRONYM() != null) {
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "journal",
-                            "acronym",
-                            BooleanOperator.EQUALS,
-                            ctx.STRING().getText()
-                    )
+        } else if (ctx.ACRONYM() != null) {
+            condition = new BooleanCondition(
+                    "journal",
+                    "acronym",
+                    BooleanOperator.EQUALS,
+                    ctx.STRING().getText()
             );
-        }
-
-        if (ctx.ABOUT() != null) {
+        } else if (ctx.ABOUT() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -57,16 +52,12 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             KeywordVisitor kv = new KeywordVisitor();
             kv.visitKeyword(ctx.keyword(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_has_keyword",
-                            "keyword",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_has_keyword",
+                    "keyword",
+                    subQuery
             );
-        }
-
-        if (ctx.AFTER() != null) {
+        } else if (ctx.AFTER() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -74,17 +65,13 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "dblpKey"
             );
 
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.GT,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.GT,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.BEFORE() != null) {
+        } else if (ctx.BEFORE() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -92,17 +79,13 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "dblpKey"
             );
 
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.LT,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.LT,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.IN_YEAR() != null) {
+        } else if (ctx.IN_YEAR() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -110,17 +93,13 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "dblpKey"
             );
 
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.EQUALS,
-                            Integer.parseInt(ctx.YEAR().getText())
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.EQUALS,
+                    Integer.parseInt(ctx.YEAR().getText())
             );
-        }
-
-        if (ctx.VOLUME() != null) {
+        } else if (ctx.VOLUME() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -128,17 +107,13 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     "dblpKey"
             );
 
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "volume",
-                            BooleanOperator.EQUALS,
-                            ctx.STRING().getText()
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "volume",
+                    BooleanOperator.EQUALS,
+                    ctx.STRING().getText()
             );
-        }
-
-        if (ctx.OF() != null) {
+        } else if (ctx.OF() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "journal_dblpKey",
@@ -152,13 +127,23 @@ class JournalConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
 
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "journal",
-                            "dblpKey",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "journal",
+                    "dblpKey",
+                    subQuery
             );
+        }
+
+        if (condition != null) {
+            if (ctx.logicalOperator() != null) {
+                if (ctx.logicalOperator().or() != null) {
+                    condition.or();
+                }
+                if (ctx.logicalOperator().not() != null) {
+                    condition.negate();
+                }
+            }
+            sqlQuery.addCondition(condition);
         }
     }
 }

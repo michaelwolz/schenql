@@ -5,21 +5,21 @@ import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
+import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
 import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
 
 class ConferenceConditionVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitConferenceCondition(SchenqlParser.ConferenceConditionContext ctx, Query sqlQuery) {
+        Condition condition = null;
+
         if (ctx.ACRONYM() != null) {
-            BooleanCondition condition = new BooleanCondition(
+            condition = new BooleanCondition(
                     "conference",
                     "acronym",
                     BooleanOperator.EQUALS,
                     ctx.STRING().getText()
             );
-            sqlQuery.addCondition(condition);
-        }
-
-        if (ctx.ABOUT() != null) {
+        } else if (ctx.ABOUT() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "conference_dblpKey",
@@ -36,67 +36,51 @@ class ConferenceConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             KeywordVisitor kv = new KeywordVisitor();
             Query subQuery = new Query();
             kv.visitKeyword(ctx.keyword(), subQuery);
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "publication_has_keyword",
-                            "keyword",
-                            subQuery
-                    )
+            condition = new SubQueryCondition(
+                    "publication_has_keyword",
+                    "keyword",
+                    subQuery
             );
-        }
-
-        if (ctx.AFTER() != null) {
+        } else if (ctx.AFTER() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "conference_dblpKey",
                     "conference",
                     "dblpKey"
             );
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.GT,
-                            ctx.YEAR().getText()
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.GT,
+                    ctx.YEAR().getText()
             );
-        }
-
-        if (ctx.BEFORE() != null) {
+        } else if (ctx.BEFORE() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "conference_dblpKey",
                     "conference",
                     "dblpKey"
             );
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.LT,
-                            ctx.YEAR().getText()
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.LT,
+                    ctx.YEAR().getText()
             );
-        }
-
-        if (ctx.IN_YEAR() != null) {
+        } else if (ctx.IN_YEAR() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "conference_dblpKey",
                     "conference",
                     "dblpKey"
             );
-            sqlQuery.addCondition(
-                    new BooleanCondition(
-                            "publication",
-                            "year",
-                            BooleanOperator.EQUALS,
-                            ctx.YEAR().getText()
-                    )
+            condition = new BooleanCondition(
+                    "publication",
+                    "year",
+                    BooleanOperator.EQUALS,
+                    ctx.YEAR().getText()
             );
-        }
-
-        if (ctx.OF() != null) {
+        } else if (ctx.OF() != null) {
             sqlQuery.addJoin(
                     "publication",
                     "conference_dblpKey",
@@ -109,14 +93,24 @@ class ConferenceConditionVisitor extends SchenqlParserBaseVisitor<Void> {
             subQuery.addSelect("publication", "conference_dblpKey");
             PublicationVisitor pv = new PublicationVisitor();
             pv.visitPublication(ctx.publication(), subQuery);
-            
-            sqlQuery.addCondition(
-                    new SubQueryCondition(
-                            "conference",
-                            "dblpKey",
-                            subQuery
-                    )
+
+            condition = new SubQueryCondition(
+                    "conference",
+                    "dblpKey",
+                    subQuery
             );
+        }
+
+        if (condition != null) {
+            if (ctx.logicalOperator() != null) {
+                if (ctx.logicalOperator().or() != null) {
+                    condition.or();
+                }
+                if (ctx.logicalOperator().not() != null) {
+                    condition.negate();
+                }
+            }
+            sqlQuery.addCondition(condition);
         }
     }
 }
