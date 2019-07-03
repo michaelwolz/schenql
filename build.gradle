@@ -38,23 +38,15 @@ test {
     maxHeapSize="1G"
 }
 
-jar {
-    manifest {
-        attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.Schenql"
-    }
-
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
-task customFatJar(type: Jar) {
+task uberJar(type: Jar) {
     manifest {
         attributes "Main-Class": "de.unitrier.dbis.schenql.compiler.Schenql"
     }
 
     baseName = "schenql-full"
 
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     with jar
 }
