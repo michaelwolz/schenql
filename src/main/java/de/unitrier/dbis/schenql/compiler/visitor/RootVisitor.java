@@ -6,9 +6,12 @@ import de.unitrier.dbis.schenql.compiler.Schenql;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 
 public class RootVisitor extends SchenqlParserBaseVisitor<Query> {
-    @Override
-    public Query visitRoot(SchenqlParser.RootContext ctx) {
+    public Query visitRoot(SchenqlParser.RootContext ctx, boolean isApiCall) {
         Query sqlQuery = new Query();
+
+        if (isApiCall) {
+            sqlQuery.addSelect("*");
+        }
 
         if (ctx.query() != null) {
             QueryVisitor qv = new QueryVisitor();

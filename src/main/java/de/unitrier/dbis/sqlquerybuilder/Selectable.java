@@ -31,9 +31,16 @@ class Selectable {
 
     String createStatement() {
         String stmnt = "";
+
         if (tableName != null) {
             stmnt += tableName.getQueryString() + ".";
         }
+
+        if (fieldName.toString().equals("*")) {
+            stmnt += "*";
+            return stmnt;
+        }
+
         stmnt += fieldName.getQueryString();
         return stmnt;
     }

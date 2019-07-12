@@ -23,7 +23,7 @@ public class Schenql {
         if (args.length == 2 && args[0].equals("-query")) {
             // Check for if query given by program call
             try {
-                System.out.println(compileSchenQL(args[1]));
+                System.out.println(compileSchenQL(args[1], false));
             } catch (SchenQLCompilerException e) {
                 System.out.println("You have an error in your SchenQL-Syntax.");
             }
@@ -50,7 +50,7 @@ public class Schenql {
                     if (!query.equals("exit;")) {
                         try {
                             // Generate SQL
-                            generatedSQL = compileSchenQL(query);
+                            generatedSQL = compileSchenQL(query, false);
                             if (DEBUG_MODE) System.out.println("Query: " + generatedSQL);
                             // Execute the query
                             dbConnection.executeQuery(generatedSQL);
@@ -71,7 +71,7 @@ public class Schenql {
         }
     }
 
-    public static String compileSchenQL(String schenQL) throws SchenQLCompilerException {
+    public static String compileSchenQL(String schenQL, boolean isApiCall) throws SchenQLCompilerException {
         CharStream charStream = CharStreams.fromString(schenQL);
 
         // Initializing the lexer
@@ -91,7 +91,7 @@ public class Schenql {
 
         if (errorListener.getSyntaxErrors().size() == 0) {
             // Generate SQL
-            return visitor.visit(rootContext).buildQuery();
+            return visitor.visitRoot(rootContext, isApiCall).buildQuery();
         } else {
             throw new SchenQLCompilerException();
         }
