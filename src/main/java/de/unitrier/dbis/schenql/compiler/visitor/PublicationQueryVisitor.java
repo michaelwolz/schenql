@@ -6,7 +6,6 @@ import de.unitrier.dbis.schenql.compiler.DefaultFields;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.BooleanOperator;
-import de.unitrier.dbis.sqlquerybuilder.condition.Condition;
 
 import java.util.Arrays;
 

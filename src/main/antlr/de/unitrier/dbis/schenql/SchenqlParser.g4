@@ -62,7 +62,8 @@ publicationFunction
 
 // Persons
 personQuery
-    : PERSON
+    : personFunction |
+    PERSON
     personCondition*
     ;
 
@@ -74,7 +75,11 @@ personCondition
     ;
 
 person
-    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | ORCID_VALUE | TILDE? STRING; // Orcid
+    : LR_BRACKET personQuery RR_BRACKET | DBLP_KEY | ORCID_VALUE | TILDE? STRING;
+
+personFunction
+    : COAUTHORS OF person
+    ;
 
 // Institutions
 

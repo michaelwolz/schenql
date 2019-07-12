@@ -42,5 +42,10 @@ class PersonQueryVisitor extends SchenqlParserBaseVisitor<Void> {
                             pcv.visitPersonCondition(conditionCtx, sqlQuery)
                     );
         }
+
+        if (ctx.personFunction() != null) {
+            PersonFunctionVisitor pfv = new PersonFunctionVisitor();
+            pfv.visitPersonFunction(ctx.personFunction(), sqlQuery);
+        }
     }
 }
