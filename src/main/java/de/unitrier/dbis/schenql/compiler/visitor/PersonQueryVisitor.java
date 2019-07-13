@@ -3,6 +3,8 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
+import de.unitrier.dbis.schenql.compiler.ExtendedFields;
+import de.unitrier.dbis.schenql.compiler.Schenql;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 
 import java.util.Arrays;
@@ -11,9 +13,12 @@ class PersonQueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPersonQuery(SchenqlParser.PersonQueryContext ctx, Query sqlQuery) {
         if (ctx.PERSON() != null) {
             if (sqlQuery.selectIsEmpty())
-                Arrays.stream(DefaultFields.person).forEach(selectField ->
-                        sqlQuery.addSelect("person", selectField)
-                );
+                if (Schenql.apiMode)
+                    Arrays.stream(ExtendedFields.person).forEach(selectField ->
+                            sqlQuery.addSelect("person", selectField));
+                else
+                    Arrays.stream(DefaultFields.person).forEach(selectField ->
+                            sqlQuery.addSelect("person", selectField));
 
             sqlQuery.distinct();
             sqlQuery.addFrom("person");

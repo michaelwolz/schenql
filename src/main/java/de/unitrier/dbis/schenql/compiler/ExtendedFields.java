@@ -1,16 +1,22 @@
 package de.unitrier.dbis.schenql.compiler;
 
-public final class DefaultFields {
+public final class ExtendedFields {
     public final static String[] conference = new String[]{
+            "dblpKey",
             "acronym"
     };
 
     public final static String[] institution = new String[]{
             "primaryName",
-            "location"
+            "location",
+            "country",
+            "city",
+            "lat",
+            "lon"
     };
 
     public final static String[] journal = new String[]{
+            "dblpKey",
             "acronym"
     };
 
@@ -19,12 +25,22 @@ public final class DefaultFields {
     };
 
     public final static String[] person = new String[]{
+            "dblpKey",
             "primaryName",
             "orcid",
+            "h-index"
     };
 
     public final static String[] publication = new String[]{
+            "dblpKey",
             "title",
+            "abstract",
+            "ee",
+            "url",
             "year",
+            "volume",
+            "type",
+            "conference_dblpKey",
+            "journal_dblpKey"
     };
 }

@@ -3,6 +3,8 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
 import de.unitrier.dbis.schenql.compiler.DefaultFields;
+import de.unitrier.dbis.schenql.compiler.ExtendedFields;
+import de.unitrier.dbis.schenql.compiler.Schenql;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 
 import java.util.Arrays;
@@ -11,8 +13,12 @@ class JournalQueryVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitJournalQuery(SchenqlParser.JournalQueryContext ctx, Query sqlQuery) {
         if (ctx.JOURNAL() != null) {
             if (sqlQuery.selectIsEmpty())
-                Arrays.stream(DefaultFields.journal).forEach(selectField ->
-                        sqlQuery.addSelect("journal", selectField));
+                if (Schenql.apiMode)
+                    Arrays.stream(ExtendedFields.journal).forEach(selectField ->
+                            sqlQuery.addSelect("journal", selectField));
+                else
+                    Arrays.stream(DefaultFields.journal).forEach(selectField ->
+                            sqlQuery.addSelect("journal", selectField));
 
 
             sqlQuery.distinct();
