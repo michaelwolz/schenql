@@ -38,7 +38,6 @@ public final class ExtendedFields {
             "ee",
             "url",
             "year",
-            "volume",
             "type",
             "conference_dblpKey",
             "journal_dblpKey"
