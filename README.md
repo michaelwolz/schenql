@@ -1,3 +1,3 @@
 # SchenQL
 
-https://arxiv.org/abs/1906.06132
+https://arxiv.org/pdf/1906.06132.pdf
