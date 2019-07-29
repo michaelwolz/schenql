@@ -7,6 +7,7 @@ public final class ExtendedFields {
     };
 
     public final static String[] institution = new String[]{
+            "key",
             "primaryName",
             "location",
             "country",

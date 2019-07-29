@@ -85,7 +85,7 @@ personFunction
 
 institutionQuery
     : INSTITUTION
-    (institutionCondition logicalOperator)*
+    institutionCondition*
     ;
 
 institutionCondition
