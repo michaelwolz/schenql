@@ -2,17 +2,28 @@ package de.unitrier.dbis.schenql.compiler.visitor;
 
 import de.unitrier.dbis.schenql.SchenqlParser;
 import de.unitrier.dbis.schenql.SchenqlParserBaseVisitor;
+import de.unitrier.dbis.schenql.compiler.DefaultFields;
+import de.unitrier.dbis.schenql.compiler.ExtendedFields;
+import de.unitrier.dbis.schenql.compiler.Schenql;
 import de.unitrier.dbis.sqlquerybuilder.AggregateFunction;
 import de.unitrier.dbis.sqlquerybuilder.OrderBy;
 import de.unitrier.dbis.sqlquerybuilder.Query;
 import de.unitrier.dbis.sqlquerybuilder.condition.InCondition;
 import de.unitrier.dbis.sqlquerybuilder.condition.SubQueryCondition;
 
+import java.util.Arrays;
+
 class PersonFunctionVisitor extends SchenqlParserBaseVisitor<Void> {
     void visitPersonFunction(SchenqlParser.PersonFunctionContext ctx, Query sqlQuery) {
         if (ctx.COAUTHORS() != null) {
             if ((ctx.getParent().getParent().getRuleContext() instanceof SchenqlParser.QueryContext)) {
-                sqlQuery.addSelect("person", "primaryName");
+                if (Schenql.apiMode)
+                    Arrays.stream(ExtendedFields.person).forEach(selectField ->
+                            sqlQuery.addSelect("person", selectField));
+                else
+                    Arrays.stream(DefaultFields.person).forEach(selectField ->
+                            sqlQuery.addSelect("person", selectField));
+
                 AggregateFunction score = new AggregateFunction("person", "primaryName", "COUNT");
                 score.setAlias("score");
                 sqlQuery.addSelect(score);
