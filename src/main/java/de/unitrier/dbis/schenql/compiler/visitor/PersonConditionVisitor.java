@@ -298,9 +298,23 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                     ctx.ORCID_VALUE().getText()
             );
         } else if (ctx.WBC() != null) {
-            System.out.println("primaryName: Christin Katharina Kreutz, orcid: 0000-0002-5075-7699");
-            System.out.println("primaryName: Michael Wolz, orcid: 0000-0002-9313-7131");
-            System.exit(1);
+            ConditionGroup condGroup = new ConditionGroup();
+            BooleanCondition cond1 = new BooleanCondition(
+                    "person",
+                    "primaryName",
+                    BooleanOperator.EQUALS,
+                    "Christin Kreutz"
+            );
+            BooleanCondition cond2 = new BooleanCondition(
+                    "person",
+                    "primaryName",
+                    BooleanOperator.EQUALS,
+                    "Michael Wolz"
+            );
+            cond2.or();
+            condGroup.addCondition(cond1);
+            condGroup.addCondition(cond2);
+            condition = condGroup;
         }
 
         if (condition != null) {
