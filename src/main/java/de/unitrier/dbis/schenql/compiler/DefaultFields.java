@@ -2,7 +2,8 @@ package de.unitrier.dbis.schenql.compiler;
 
 public final class DefaultFields {
     public final static String[] conference = new String[]{
-            "acronym"
+            "acronym",
+            "name"
     };
 
     public final static String[] institution = new String[]{

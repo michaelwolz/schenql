@@ -3,7 +3,8 @@ package de.unitrier.dbis.schenql.compiler;
 public final class ExtendedFields {
     public final static String[] conference = new String[]{
             "dblpKey",
-            "acronym"
+            "acronym",
+            "name"
     };
 
     public final static String[] institution = new String[]{
