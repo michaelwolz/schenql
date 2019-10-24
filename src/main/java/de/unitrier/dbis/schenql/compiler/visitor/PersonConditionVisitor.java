@@ -203,6 +203,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 ConditionGroup condGroup = new ConditionGroup();
 
                 Query journalSubQuery = new Query();
+		journalSubQuery.addSelect("dblpKey");
                 journalSubQuery.addFrom("journal");
                 journalSubQuery.addCondition(
                         new BooleanCondition(
@@ -213,6 +214,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                         )
                 );
                 Query conferenceSubQuery = new Query();
+		conferenceSubQuery.addSelect("dblpKey");
                 conferenceSubQuery.addFrom("conference");
                 conferenceSubQuery.addCondition(
                         new BooleanCondition(
