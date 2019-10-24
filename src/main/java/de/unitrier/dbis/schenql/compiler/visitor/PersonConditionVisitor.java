@@ -200,7 +200,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                 condGroup.addCondition(cond2);
                 condition = condGroup;
             } else {
-                ConditionGroup condGroup = new ConditionGroup();
+                /*ConditionGroup condGroup = new ConditionGroup();
 
                 Query journalSubQuery = new Query();
 		journalSubQuery.addSelect("dblpKey");
@@ -212,7 +212,7 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                                 BooleanOperator.EQUALS,
                                 ctx.STRING().getText()
                         )
-                );
+                );*/
                 Query conferenceSubQuery = new Query();
 		conferenceSubQuery.addSelect("dblpKey");
                 conferenceSubQuery.addFrom("conference");
@@ -225,22 +225,22 @@ class PersonConditionVisitor extends SchenqlParserBaseVisitor<Void> {
                         )
                 );
 
-                SubQueryCondition cond1 = new SubQueryCondition(
+                /*SubQueryCondition cond1 = new SubQueryCondition(
                         "publication",
                         "journal_dblpKey",
                         journalSubQuery
-                );
+                );*/
                 SubQueryCondition cond2 = new SubQueryCondition(
                         "publication",
                         "conference_dblpKey",
                         conferenceSubQuery
                 );
-                cond2.or();
+                //cond2.or();
 
-                condGroup.addCondition(cond1);
-                condGroup.addCondition(cond2);
+                //condGroup.addCondition(cond1);
+                //condGroup.addCondition(cond2);
 
-                sqlQuery.addCondition(condGroup);
+                sqlQuery.addCondition(cond2);
             }
         } else if (ctx.CITED_BY() != null) {
             sqlQuery.addJoin(
