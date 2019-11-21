@@ -19,10 +19,19 @@ class JournalQueryVisitor extends SchenqlParserBaseVisitor<Void> {
                 else
                     Arrays.stream(DefaultFields.journal).forEach(selectField ->
                             sqlQuery.addSelect("journal", selectField));
-
-
+	    
+	    // Adding journal name for as default field hardcoded!  
+	    sqlQuery.addSelect("journal_name", "name");
             sqlQuery.distinct();
             sqlQuery.addFrom("journal");
+	    sqlQuery.addJoin(
+		"journal_name",
+		"journalKey",
+		"journal",
+		"dblpKey"
+	    );
+	    // Limit the results to one name! This should be changed in future
+	    sqlQuery.addGroupBy("journal", "acronym");
 
             JournalConditionVisitor jcv = new JournalConditionVisitor();
             ctx.journalCondition()
