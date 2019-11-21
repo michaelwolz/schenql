@@ -19,8 +19,7 @@ public final class ExtendedFields {
 
     public final static String[] journal = new String[]{
             "dblpKey",
-            "acronym",
-	    "name"
+            "acronym"
     };
 
     public final static String[] keyword = new String[]{
